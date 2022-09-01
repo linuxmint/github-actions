@@ -1,0 +1,37 @@
+name: Build
+
+# called from a workflow in each repository
+on:
+  workflow_call:
+    inputs:
+      commit_id:
+        description: "The commit sha or branch to build from"
+        required: true
+        default: "master"
+        type: string
+      dependencies:
+        description: 'A comma separated list of owner/repo dependencies to pull the latest build for (such as "linuxmint/xapp, linuxmint/cinnamon-desktop, linuxmint/cinnamon-menus")'
+        required: false
+        type: string
+
+jobs:
+  mint21:
+    uses: mtwebster/github-actions/.github/workflows/build-on-image.yml@main
+    with:
+      mint_version: mint21
+      image: linuxmintd/mint21-amd64
+      commit_id: ${{ inputs.commit_id }}
+      dependencies: ${{ inputs.dependencies }}
+  lmde5:
+    uses: mtwebster/github-actions/.github/workflows/build-on-image.yml@main
+    with:
+      mint_version: lmde5
+      image: linuxmintd/lmde5-amd64
+      commit_id: ${{ inputs.commit_id }}
+      dependencies: ${{ inputs.dependencies }}
+
+
+
+
+
+

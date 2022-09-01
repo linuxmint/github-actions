@@ -1,0 +1,8 @@
+name: 'Build'
+description: 'Build package'
+
+runs:
+  using: 'composite'
+  steps:
+    - run: mint-build -i
+      shell: bash

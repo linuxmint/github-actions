@@ -1,0 +1,79 @@
+name: Build
+
+# called from a workflow in each repository
+on:
+  workflow_call:
+    inputs:
+      mint_version:
+        description: "The Mint version to tag for"
+        required: true
+        type: string
+      image:
+        description: "The container to build in"
+        required: true
+        type: string
+      commit_id:
+        description: "The commit sha or branch to build from"
+        required: true
+        default: "master"
+        type: string
+      dependencies:
+        description: 'A comma separated list of owner/repo dependencies to pull the latest build for (such as "linuxmint/xapp, linuxmint/cinnamon-desktop, linuxmint/cinnamon-menus")'
+        required: false
+        type: string
+
+jobs:
+  build-on-image:
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ inputs.image }}
+      # Disable seccomp until a container manager in GitHub recognizes
+      # clone3() syscall,
+      # <https://github.com/actions/virtual-environments/issues/3812>.
+      options: --security-opt seccomp=unconfined
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.commit_id }}
+
+      - name: Update build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get -y dist-upgrade
+        shell: bash
+
+      - name: Install first-class dependencies
+        uses: mtwebster/github-actions/install-deps@main
+        with:
+          mint_version: ${{ inputs.mint_version }}
+          dependencies: ${{ inputs.dependencies }}
+
+      - name: Build
+        uses: mtwebster/github-actions/real-build@main
+
+      #### Stop here when triggered by a PR
+
+      - name: Isolate packages
+        if: ${{ github.event_name != 'pull_request'}}
+        run: |
+          mkdir -p ./output/packages
+          mv ../*.deb ./output/packages
+        shell: bash
+
+      - name: Bundle packages
+        if: ${{ github.event_name != 'pull_request'}}
+        uses: TheDoctor0/zip-release@0.6.2
+        with:
+          type: 'tar'
+          filename: 'packages.tar.gz'
+          path: packages
+          directory: ./output
+
+      - name: Create release
+        if: ${{ github.event_name != 'pull_request'}}
+        uses: ncipollo/release-action@v1.10.0
+        with:
+          artifacts: "output/packages.tar.gz"
+          allowUpdates: true
+          tag: master.${{ inputs.mint_version }}
