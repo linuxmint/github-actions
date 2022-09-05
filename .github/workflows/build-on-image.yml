@@ -49,13 +49,13 @@ jobs:
         shell: bash
 
       - name: Install first-class dependencies
-        uses: linuxmint/github-actions/install-deps@main
+        uses: linuxmint/github-actions/install-deps@master
         with:
           mint_version: ${{ inputs.mint_version }}
           dependencies: ${{ inputs.dependencies }}
 
       - name: Build
-        uses: linuxmint/github-actions/real-build@main
+        uses: linuxmint/github-actions/real-build@master
 
       #### Stop here when triggered by a PR
 
