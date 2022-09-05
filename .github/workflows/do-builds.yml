@@ -18,6 +18,7 @@ jobs:
   mint21:
     uses: linuxmint/github-actions/.github/workflows/build-on-image.yml@main
     with:
+      display_name: Mint 21
       mint_version: mint21
       image: linuxmintd/mint21-amd64
       commit_id: ${{ inputs.commit_id }}
@@ -25,6 +26,7 @@ jobs:
   lmde5:
     uses: linuxmint/github-actions/.github/workflows/build-on-image.yml@main
     with:
+      display_name: LMDE 5
       mint_version: lmde5
       image: linuxmintd/lmde5-amd64
       commit_id: ${{ inputs.commit_id }}
