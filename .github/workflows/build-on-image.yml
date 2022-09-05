@@ -44,13 +44,13 @@ jobs:
         shell: bash
 
       - name: Install first-class dependencies
-        uses: mtwebster/github-actions/install-deps@main
+        uses: linuxmint/github-actions/install-deps@main
         with:
           mint_version: ${{ inputs.mint_version }}
           dependencies: ${{ inputs.dependencies }}
 
       - name: Build
-        uses: mtwebster/github-actions/real-build@main
+        uses: linuxmint/github-actions/real-build@main
 
       #### Stop here when triggered by a PR
 
