@@ -75,10 +75,18 @@ jobs:
           path: packages
           directory: ./output
 
+      - name: Delete existing tag/release
+        if: ${{ github.event_name != 'pull_request'}}
+        uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+          delete_release: true
+          tag_name: master.${{ inputs.mint_version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create release
         if: ${{ github.event_name != 'pull_request'}}
         uses: ncipollo/release-action@v1.10.0
         with:
           artifacts: "output/packages.tar.gz"
-          allowUpdates: true
           tag: master.${{ inputs.mint_version }}
