@@ -96,4 +96,3 @@ jobs:
         with:
           artifacts: "output/packages.tar.gz"
           tag: master.${{ inputs.mint_version }}
-          generateReleaseNotes: true
