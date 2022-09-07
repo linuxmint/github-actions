@@ -13,31 +13,27 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - uses: actions/setup-python@v4
-      with:
-        python-version: '3.x'
-    - uses: jannekem/run-python-script-action@v1.2
-      with:
-        script: |
-          import sys
-          import os
-          import tempfile
+    - run: |
+        import sys
+        import os
+        import tempfile
 
-          tag = "${{ inputs.mint_version }}"
-          dep_string = "${{ inputs.dependencies }}"
-          if dep_string == "":
-              exit(0)
-          deps = dep_string.split(",")
+        tag = "${{ inputs.mint_version }}"
+        dep_string = "${{ inputs.dependencies }}"
+        if dep_string == "":
+            exit(0)
+        deps = dep_string.split(",")
 
-          with tempfile.TemporaryDirectory() as dirname:
-              for dep_entry in deps:
-                  dep_repo = dep_entry.strip()
-                  dep_name = dep_repo.split("/")[1]
-                  if os.system("wget https://github.com/%s/releases/download/master.%s/packages.tar.gz -O %s.tar.gz" % (dep_repo, tag, dep_name)) != 0:
-                      exit(1)
+        with tempfile.TemporaryDirectory() as dirname:
+            for dep_entry in deps:
+                dep_repo = dep_entry.strip()
+                dep_name = dep_repo.split("/")[1]
+                if os.system("wget https://github.com/%s/releases/download/master.%s/packages.tar.gz -O %s.tar.gz" % (dep_repo, tag, dep_name)) != 0:
+                    exit(1)
 
-              if os.system("ls *.tar.gz | xargs -i tar zxvf {}") != 0:
-                  exit(1)
-              if os.system("sudo apt-get install --yes --allow-downgrades ./packages/*.deb") != 0:
-                  exit(1)
-          exit(0)
+            if os.system("ls *.tar.gz | xargs -i tar zxvf {}") != 0:
+                exit(1)
+            if os.system("sudo apt-get install --yes --allow-downgrades ./packages/*.deb") != 0:
+                exit(1)
+        exit(0)
+      shell: python
