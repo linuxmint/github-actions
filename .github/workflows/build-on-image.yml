@@ -37,10 +37,15 @@ jobs:
       # <https://github.com/actions/virtual-environments/issues/3812>.
       options: --security-opt seccomp=unconfined
     steps:
-      - name: Checkout
+      - name: Checkout Pull Request
+        if: ${{ github.event_name == 'pull_request'}}
         uses: actions/checkout@v3
         with:
-          ref: ${{ inputs.commit_id }}
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout master
+        if: ${{ github.event_name != 'pull_request'}}
+        uses: actions/checkout@v3
 
       - name: Update build environment
         run: |
