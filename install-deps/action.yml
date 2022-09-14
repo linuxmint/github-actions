@@ -19,7 +19,7 @@ runs:
         import tempfile
 
         tag = "${{ inputs.mint_version }}"
-        dep_string = "${{ inputs.dependencies }}"
+        dep_string = os.environ["BUILD_DEPS"]
         if dep_string == "":
             exit(0)
         deps = dep_string.split(",")
@@ -36,4 +36,6 @@ runs:
             if os.system("sudo apt-get install --yes --allow-downgrades ./packages/*.deb") != 0:
                 exit(1)
         exit(0)
+      env:
+        BUILD_DEPS: ${{ inputs.dependencies }}
       shell: python
