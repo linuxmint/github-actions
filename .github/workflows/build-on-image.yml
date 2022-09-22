@@ -43,7 +43,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Checkout master
+      - name: Checkout branch ${{ github.ref }}
         if: ${{ github.event_name != 'pull_request'}}
         uses: actions/checkout@v3
 
@@ -87,7 +87,7 @@ jobs:
         uses: dev-drprasad/delete-tag-and-release@v0.2.0
         with:
           delete_release: true
-          tag_name: master.${{ inputs.mint_version }}
+          tag_name: ${{ github.ref_name }}.${{ inputs.mint_version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -96,4 +96,4 @@ jobs:
         uses: ncipollo/release-action@v1.10.0
         with:
           artifacts: "output/packages.tar.gz"
-          tag: master.${{ inputs.mint_version }}
+          tag: ${{ github.ref_name }}.${{ inputs.mint_version }}
