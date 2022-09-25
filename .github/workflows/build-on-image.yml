@@ -97,3 +97,4 @@ jobs:
         with:
           artifacts: "output/packages.tar.gz"
           tag: ${{ github.ref_name }}.${{ inputs.mint_version }}
+          commit: ${{ github.sha }}
