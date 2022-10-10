@@ -93,7 +93,7 @@ jobs:
 
       - name: Create release
         if: ${{ github.event_name != 'pull_request'}}
-        uses: ncipollo/release-action@v1.10.0
+        uses: ncipollo/release-action@v1.11.1
         with:
           artifacts: "output/packages.tar.gz"
           tag: ${{ github.ref_name }}.${{ inputs.mint_version }}
