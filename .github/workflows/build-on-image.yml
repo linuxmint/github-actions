@@ -93,9 +93,9 @@ jobs:
 
       - name: Create release
         if: ${{ github.event_name != 'pull_request'}}
-        uses: ncipollo/release-action@v1.11.1
+        uses: marvinpinto/action-automatic-releases@v1.2.1
         with:
-          artifacts: "output/packages.tar.gz"
-          tag: ${{ github.ref_name }}.${{ inputs.mint_version }}
-          commit: ${{ github.sha }}
-          draft: false
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: ${{ github.ref_name }}.${{ inputs.mint_version }}
+          prerelease: false
+          files: "output/packages.tar.gz"
