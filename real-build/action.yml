@@ -5,7 +5,6 @@ runs:
   using: 'composite'
   steps:
     - run: |
-        echo User is: $USER
-        chown $USER:$USER .
+        chown root:root .
         mint-build -i
       shell: bash
