@@ -4,5 +4,8 @@ description: 'Build package'
 runs:
   using: 'composite'
   steps:
-    - run: mint-build -i
+    - run: |
+        echo User is: $USER
+        chown $USER:$USER .
+        mint-build -i
       shell: bash
