@@ -94,9 +94,9 @@ jobs:
 
       - name: Create release
         if: ${{ github.event_name != 'pull_request'}}
-        uses: marvinpinto/action-automatic-releases@v1.2.1
+        uses: softprops/action-gh-release@v1
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: ${{ github.ref_name }}.${{ inputs.mint_version }}
+          token: "${{ secrets.GITHUB_TOKEN }}"
+          tag_name: ${{ github.ref_name }}.${{ inputs.mint_version }}
           prerelease: false
           files: "output/packages.tar.gz"
