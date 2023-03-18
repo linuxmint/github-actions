@@ -99,4 +99,5 @@ jobs:
           token: "${{ secrets.GITHUB_TOKEN }}"
           tag_name: ${{ github.ref_name }}.${{ inputs.mint_version }}
           prerelease: false
+          draft: false
           files: "output/packages.tar.gz"
