@@ -92,6 +92,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Wait a few moments...
+        if: ${{ github.event_name != 'pull_request'}}
+        run: |
+          sleep 20
+        shell: bash
+
       - name: Create release
         if: ${{ github.event_name != 'pull_request'}}
         uses: softprops/action-gh-release@v1
