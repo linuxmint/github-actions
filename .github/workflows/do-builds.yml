@@ -20,7 +20,7 @@ jobs:
     with:
       display_name: Mint 21
       mint_version: mint21
-      image: linuxmintd/mint21-amd64
+      image: linuxmintd/mint21.2-amd64
       commit_id: ${{ inputs.commit_id }}
       dependencies: ${{ inputs.dependencies }}
   lmde5:
