@@ -64,6 +64,12 @@ jobs:
       - name: Build
         uses: linuxmint/github-actions/real-build@master
 
+      - name: Setup SSH upon failure
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
+        with:
+          limit-access-to-actor: true
+
       #### Stop here when triggered by a PR
 
       - name: Isolate packages
