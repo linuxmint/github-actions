@@ -35,6 +35,8 @@ _____
 [python-xapp](https://github.com/linuxmint/python-xapp/actions): ![python-xapp](https://github.com/linuxmint/python-xapp/actions/workflows/build.yml/badge.svg)
 
 [xapp](https://github.com/linuxmint/xapp/actions): ![xapp](https://github.com/linuxmint/xapp/actions/workflows/build.yml/badge.svg)
+
+[xdg-desktop-portal-xapp](https://github.com/linuxmint/xdg-desktop-portal-xapp/actions): ![xdg-desktop-portal-xapp](https://github.com/linuxmint/xdg-desktop-portal-xapp/actions/workflows/build.yml/badge.svg)
 _____
 
 [xviewer](https://github.com/linuxmint/xviewer/actions): ![xviewer](https://github.com/linuxmint/xviewer/actions/workflows/build.yml/badge.svg)
