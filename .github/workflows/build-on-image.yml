@@ -77,6 +77,8 @@ jobs:
         run: |
           mkdir -p ./output/packages
           mv ../*.deb ./output/packages
+          mv ../*.ddeb ./output/packages
+          mv ../*.dsc ./output
         shell: bash
 
       - name: Bundle packages
@@ -106,10 +108,11 @@ jobs:
 
       - name: Create release
         if: ${{ github.event_name != 'pull_request'}}
-        uses: softprops/action-gh-release@v1
+        uses: ncipollo/release-action@v1.12.0
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
-          tag_name: ${{ github.ref_name }}.${{ inputs.mint_version }}
-          prerelease: false
-          draft: false
-          files: "output/packages.tar.gz"
+          artifacts: "output/packages.tar.gz,output/*.dsc"
+          tag: ${{ github.ref_name }}.${{ inputs.mint_version }}
+          commit: ${{ github.sha }}
+          makeLatest: true
+
