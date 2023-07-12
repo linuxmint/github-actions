@@ -76,9 +76,8 @@ jobs:
         if: ${{ github.event_name != 'pull_request'}}
         run: |
           mkdir -p ./output/packages
-          mv ../*.deb ./output/packages
-          mv ../*.ddeb ./output/packages
-          mv ../*.dsc ./output
+          mv ../*.changes ./output
+          mv ../*.*deb ./output/packages
         shell: bash
 
       - name: Bundle packages
@@ -111,7 +110,7 @@ jobs:
         uses: ncipollo/release-action@v1.12.0
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
-          artifacts: "output/packages.tar.gz,output/*.dsc"
+          artifacts: "output/packages.tar.gz,output/*.changes"
           tag: ${{ github.ref_name }}.${{ inputs.mint_version }}
           commit: ${{ github.sha }}
           makeLatest: true
