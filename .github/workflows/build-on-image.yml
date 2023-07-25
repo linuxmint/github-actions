@@ -113,5 +113,6 @@ jobs:
           artifacts: "output/packages.tar.gz,output/*.changes"
           tag: ${{ github.ref_name }}.${{ inputs.mint_version }}
           commit: ${{ github.sha }}
+          artifactErrorsFailBuild: true
           makeLatest: true
 
