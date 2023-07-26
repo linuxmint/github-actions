@@ -31,6 +31,14 @@ jobs:
       image: linuxmintd/lmde5-amd64
       commit_id: ${{ inputs.commit_id }}
       dependencies: ${{ inputs.dependencies }}
+  lmde6:
+    uses: linuxmint/github-actions/.github/workflows/build-on-image.yml@master
+    with:
+      display_name: LMDE 6
+      mint_version: lmde6
+      image: linuxmintd/lmde6-amd64
+      commit_id: ${{ inputs.commit_id }}
+      dependencies: ${{ inputs.dependencies }}
 
 
 
