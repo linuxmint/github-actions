@@ -23,14 +23,6 @@ jobs:
       image: linuxmintd/mint21.2-amd64
       commit_id: ${{ inputs.commit_id }}
       dependencies: ${{ inputs.dependencies }}
-  lmde5:
-    uses: linuxmint/github-actions/.github/workflows/build-on-image.yml@master
-    with:
-      display_name: LMDE 5
-      mint_version: lmde5
-      image: linuxmintd/lmde5-amd64
-      commit_id: ${{ inputs.commit_id }}
-      dependencies: ${{ inputs.dependencies }}
   lmde6:
     uses: linuxmint/github-actions/.github/workflows/build-on-image.yml@master
     with:
