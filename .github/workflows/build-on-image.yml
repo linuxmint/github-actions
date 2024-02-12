@@ -98,6 +98,13 @@ jobs:
           path: packages
           directory: ./output
 
+      - name: Install gh cli
+        if: ${{ github.event_name != 'pull_request'}}
+        uses: sersoft-gmbh/setup-gh-cli-action@v2
+        with:
+          version: stable
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Delete existing tag/release
         if: ${{ github.event_name != 'pull_request'}}
         run: gh release delete ${{ github.ref_name }}.${{ inputs.mint_version }} --cleanup-tag || true
