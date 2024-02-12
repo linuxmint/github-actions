@@ -47,6 +47,15 @@ jobs:
         if: ${{ github.event_name != 'pull_request'}}
         uses: actions/checkout@v3
 
+      - name: Run Codespell
+        uses: codespell-project/actions-codespell@v2
+        with:
+          # only show the typo detected but don't make workflow to fail
+          only_warn: 1
+          skip: ChangeLog,*.po,LINGUAS
+          # word to exclude must be always lowercase as must be same of the codespell dictionary
+          ignore_words_list: gir
+
       - name: Update build environment
         run: |
           echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
