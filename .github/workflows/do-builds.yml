@@ -13,6 +13,14 @@ on:
         description: 'A comma separated list of owner/repo dependencies to pull the latest build for (such as "linuxmint/xapp, linuxmint/cinnamon-desktop, linuxmint/cinnamon-menus")'
         required: false
         type: string
+      codespell_ignore_files_list:
+        description: 'A comma separated list of files to skip with codespell.'
+        required: false
+        type: string
+      codespell_ignore_words_list:
+        description: 'A comma separated list of words to ignore with codespell.'
+        required: false
+        type: string
 
 jobs:
   mint22:
@@ -23,7 +31,10 @@ jobs:
       image: linuxmintd/mint22-amd64
       commit_id: ${{ inputs.commit_id }}
       dependencies: ${{ inputs.dependencies }}
-      codespell: true  # ........................................... Keep this on the most recent image
+      # Always have these on the most recent image.
+      codespell: true
+      codespell_ignore_files_list: ChangeLog,*.po,LINGUAS,${{ inputs.codespell_ignore_files_list }}
+      codespell_ignore_words_list: gir,${{ inputs.codespell_ignore_words_list }}
   lmde6:
     uses: linuxmint/github-actions/.github/workflows/build-on-image.yml@master
     with:

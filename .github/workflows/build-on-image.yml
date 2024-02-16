@@ -30,6 +30,16 @@ on:
         type: boolean
         required: false
         default: false
+      codespell_ignore_files_list:
+        description: "A comma separated list of files to skip when running codespell"
+        type: string
+        required: false
+        default: ""
+      codespell_ignore_words_list:
+        description: "A comma separated list of words to have codespell ignore"
+        type: string
+        required: false
+        default: ""
 
 jobs:
   build-on-image:
@@ -58,9 +68,9 @@ jobs:
         with:
           # only show the typo detected but don't make workflow to fail
           only_warn: 1
-          skip: ChangeLog,*.po,LINGUAS
+          skip: ${{ inputs.codespell_ignore_files_list }}  
           # word to exclude must be always lowercase as must be same of the codespell dictionary
-          ignore_words_list: gir
+          ignore_words_list: ${{ inputs.codespell_ignore_words_list }}
 
       - name: Update build environment
         run: |
