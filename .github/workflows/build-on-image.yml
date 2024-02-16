@@ -6,25 +6,30 @@ on:
     inputs:
       display_name:
         description: "Name of the build"
-        required: true
         type: string
+        required: true
       mint_version:
         description: "The Mint version to tag for"
-        required: true
         type: string
+        required: true
       image:
         description: "The container to build in"
-        required: true
         type: string
+        required: true
       commit_id:
         description: "The commit sha or branch to build from"
+        type: string
         required: true
         default: "master"
-        type: string
       dependencies:
         description: 'A comma separated list of owner/repo dependencies to pull the latest build for (such as "linuxmint/xapp, linuxmint/cinnamon-desktop, linuxmint/cinnamon-menus")'
-        required: false
         type: string
+        required: false
+      codespell:
+        description: "Whether to run codespell during the job"
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   build-on-image:
@@ -48,6 +53,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Codespell
+        if: ${{ inputs.codespell }}
         uses: codespell-project/actions-codespell@v2
         with:
           # only show the typo detected but don't make workflow to fail
