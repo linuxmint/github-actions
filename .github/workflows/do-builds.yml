@@ -33,7 +33,7 @@ jobs:
       dependencies: ${{ inputs.dependencies }}
       # Always have these on the most recent image.
       codespell: true
-      codespell_ignore_files_list: ChangeLog,*.po,LINGUAS,${{ inputs.codespell_ignore_files_list }}
+      codespell_ignore_files_list: ChangeLog,*.po,*.svg,LINGUAS,${{ inputs.codespell_ignore_files_list }}
       codespell_ignore_words_list: gir,${{ inputs.codespell_ignore_words_list }}
   lmde6:
     uses: linuxmint/github-actions/.github/workflows/build-on-image.yml@master
