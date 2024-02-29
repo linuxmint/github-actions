@@ -35,10 +35,6 @@ jobs:
             image: linuxmintd/lmde6-amd64
             display_name: LMDE 6
             codespell: false
-          - mint_version: mint21
-            image: linuxmintd/mint21-amd64
-            display_name: Mint 21
-            codespell: false
     uses: linuxmint/github-actions/.github/workflows/build-on-image.yml@master
     with:
       display_name: ${{ matrix.display_name }}
