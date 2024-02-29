@@ -23,34 +23,34 @@ on:
         type: string
 
 jobs:
-  mint22:
+  build:
+    strategy:
+      matrix:
+        include:
+          - mint_version: mint22
+            image: linuxmintd/mint22-amd64
+            display_name: Mint 22
+            codespell: true
+          - mint_version: lmde6
+            image: linuxmintd/lmde6-amd64
+            display_name: LMDE 6
+            codespell: false
+          - mint_version: mint21
+            image: linuxmintd/mint21-amd64
+            display_name: Mint 21
+            codespell: false
     uses: linuxmint/github-actions/.github/workflows/build-on-image.yml@master
     with:
-      display_name: Mint 22
-      mint_version: mint22
-      image: linuxmintd/mint22-amd64
+      display_name: ${{ matrix.display_name }}
+      mint_version: ${{ matrix.mint_version }}
+      image: ${{ matrix.image }}
+
       commit_id: ${{ inputs.commit_id }}
       dependencies: ${{ inputs.dependencies }}
-      # Always have these on the most recent image.
-      codespell: true
+
+      codespell: ${{ matrix.codespell }}
       codespell_ignore_files_list: ChangeLog,*.po,*.svg,LINGUAS,${{ inputs.codespell_ignore_files_list }}
       codespell_ignore_words_list: gir,${{ inputs.codespell_ignore_words_list }}
-  lmde6:
-    uses: linuxmint/github-actions/.github/workflows/build-on-image.yml@master
-    with:
-      display_name: LMDE 6
-      mint_version: lmde6
-      image: linuxmintd/lmde6-amd64
-      commit_id: ${{ inputs.commit_id }}
-      dependencies: ${{ inputs.dependencies }}
-  mint21:
-    uses: linuxmint/github-actions/.github/workflows/build-on-image.yml@master
-    with:
-      display_name: Mint 21
-      mint_version: mint21
-      image: linuxmintd/mint21.2-amd64
-      commit_id: ${{ inputs.commit_id }}
-      dependencies: ${{ inputs.dependencies }}
 
 
 
