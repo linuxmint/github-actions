@@ -90,7 +90,7 @@ jobs:
         uses: linuxmint/github-actions/real-build@master
 
       - name: Setup SSH upon failure
-        if: ${{ failure() && github.event_name == 'workflow_dispatch' && inputs.debug_enabled}}
+        if: ${{ failure() && inputs.debug_enabled}}
         uses: mxschmitt/action-tmate@v3
         with:
           limit-access-to-actor: true
