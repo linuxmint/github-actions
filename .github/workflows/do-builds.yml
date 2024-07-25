@@ -45,7 +45,7 @@ jobs:
       dependencies: ${{ inputs.dependencies }}
 
       codespell: ${{ matrix.codespell }}
-      codespell_ignore_files_list: ChangeLog,*.desktop,*.po,*.svg,LINGUAS,${{ inputs.codespell_ignore_files_list }}
+      codespell_ignore_files_list: ChangeLog,*.desktop,*.po,*.svg,LINGUAS,NEWS,${{ inputs.codespell_ignore_files_list }}
       codespell_ignore_words_list: gir,${{ inputs.codespell_ignore_words_list }}
 
 
