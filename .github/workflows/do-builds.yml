@@ -31,9 +31,9 @@ jobs:
             image: linuxmintd/mint22-amd64
             display_name: Mint 22
             codespell: true
-          - mint_version: lmde6
-            image: linuxmintd/lmde6-amd64
-            display_name: LMDE 6
+          - mint_version: lmde7
+            image: linuxmintd/lmde7-amd64
+            display_name: LMDE 7
             codespell: false
     uses: linuxmint/github-actions/.github/workflows/build-on-image.yml@master
     with:
