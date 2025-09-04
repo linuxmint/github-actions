@@ -41,7 +41,7 @@ jobs:
       mint_version: ${{ matrix.mint_version }}
       image: ${{ matrix.image }}
 
-      commit_id: ${{ inputs.commit_id }}
+      commit_id: ${{ matrix.mint_version == 'lmde7' && github.event.repository.name == 'cjs' && 'mozjs128' || 'master' }}
       dependencies: ${{ inputs.dependencies }}
 
       codespell: ${{ matrix.codespell }}
