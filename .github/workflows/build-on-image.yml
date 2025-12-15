@@ -54,13 +54,13 @@ jobs:
     steps:
       - name: Checkout Pull Request
         if: ${{ github.event_name == 'pull_request'}}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Checkout branch ${{ inputs.commit_id }}
         if: ${{ github.event_name != 'pull_request'}}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ inputs.commit_id }}
 
@@ -109,7 +109,7 @@ jobs:
 
       - name: Bundle packages
         if: ${{ github.event_name != 'pull_request'}}
-        uses: TheDoctor0/zip-release@0.6.2
+        uses: TheDoctor0/zip-release@0.7.6
         with:
           type: 'tar'
           filename: 'packages.tar.gz'
@@ -118,7 +118,7 @@ jobs:
 
       - name: Install gh cli
         if: ${{ github.event_name != 'pull_request'}}
-        uses: sersoft-gmbh/setup-gh-cli-action@v2
+        uses: sersoft-gmbh/setup-gh-cli-action@v3
         with:
           version: stable
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -137,7 +137,7 @@ jobs:
 
       - name: Create release
         if: ${{ github.event_name != 'pull_request'}}
-        uses: ncipollo/release-action@v1.14.0
+        uses: ncipollo/release-action@v1.20.0
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
           artifacts: "output/packages.tar.gz,output/*.changes"
