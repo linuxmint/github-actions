@@ -28,7 +28,7 @@ jobs:
       matrix:
         include:
           - mint_version: mint22
-            image: linuxmintd/mint22-amd64
+            image: linuxmintd/mint22.3-amd64
             display_name: Mint 22
             codespell: true
           - mint_version: lmde7
