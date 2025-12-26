@@ -25,6 +25,7 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - mint_version: mint22
