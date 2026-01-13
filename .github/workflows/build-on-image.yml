@@ -40,6 +40,16 @@ on:
         type: string
         required: false
         default: ""
+      upload_artifacts:
+        description: "Upload build artifacts (for PR testing)"
+        type: boolean
+        required: false
+        default: false
+      artifact_retention_days:
+        description: "Days to retain uploaded artifacts"
+        type: number
+        required: false
+        default: 7
 
 jobs:
   build-on-image:
@@ -59,7 +69,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Checkout branch ${{ inputs.commit_id }}
-        if: ${{ github.event_name != 'pull_request'}}
+        if: ${{ github.event_name != 'pull_request' }}
         uses: actions/checkout@v6
         with:
           ref: ${{ inputs.commit_id }}
@@ -97,10 +107,10 @@ jobs:
         with:
           limit-access-to-actor: true
 
-      #### Stop here when triggered by a PR
+      #### Stop here when triggered by a PR (without /upload-artifacts)
 
       - name: Isolate packages
-        if: ${{ github.event_name != 'pull_request'}}
+        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || inputs.upload_artifacts }}
         run: |
           mkdir -p ./output/packages
           mv ../*.changes ./output
@@ -108,7 +118,7 @@ jobs:
         shell: bash
 
       - name: Bundle packages
-        if: ${{ github.event_name != 'pull_request'}}
+        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || inputs.upload_artifacts }}
         uses: TheDoctor0/zip-release@0.7.6
         with:
           type: 'tar'
@@ -116,27 +126,37 @@ jobs:
           path: packages
           directory: ./output
 
+      - name: Upload build artifacts
+        if: ${{ inputs.upload_artifacts }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-${{ inputs.mint_version }}
+          path: output/packages.tar.gz
+          retention-days: ${{ inputs.artifact_retention_days }}
+
+      #### Release steps (push/workflow_dispatch only)
+
       - name: Install gh cli
-        if: ${{ github.event_name != 'pull_request'}}
+        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
         uses: sersoft-gmbh/setup-gh-cli-action@v3
         with:
           version: stable
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Delete existing tag/release
-        if: ${{ github.event_name != 'pull_request'}}
+        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
         run: gh release delete ${{ github.ref_name }}.${{ inputs.mint_version }} --cleanup-tag || true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Wait a few moments...
-        if: ${{ github.event_name != 'pull_request'}}
+        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
         run: |
           sleep 20
         shell: bash
 
       - name: Create release
-        if: ${{ github.event_name != 'pull_request'}}
+        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
         uses: ncipollo/release-action@v1.20.0
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"

@@ -21,6 +21,21 @@ on:
         description: 'A comma separated list of words to ignore with codespell.'
         required: false
         type: string
+      skip_codespell:
+        description: 'Skip codespell entirely (for test package builds)'
+        required: false
+        type: boolean
+        default: false
+      upload_artifacts:
+        description: 'Upload build artifacts (for PR testing)'
+        required: false
+        type: boolean
+        default: false
+      artifact_retention_days:
+        description: 'Days to retain uploaded artifacts'
+        required: false
+        type: number
+        default: 7
 
 jobs:
   build:
@@ -45,9 +60,12 @@ jobs:
       commit_id: ${{ matrix.mint_version == 'lmde7' && github.event.repository.name == 'cjs' && 'mozjs128' || inputs.commit_id }}
       dependencies: ${{ inputs.dependencies }}
 
-      codespell: ${{ matrix.codespell }}
+      codespell: ${{ !inputs.skip_codespell && matrix.codespell }}
       codespell_ignore_files_list: ChangeLog,*.desktop,*.po,*.svg,LINGUAS,NEWS,${{ inputs.codespell_ignore_files_list }}
       codespell_ignore_words_list: gir,${{ inputs.codespell_ignore_words_list }}
+
+      upload_artifacts: ${{ inputs.upload_artifacts }}
+      artifact_retention_days: ${{ inputs.artifact_retention_days }}
 
 
 

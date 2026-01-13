@@ -1,0 +1,123 @@
+name: Generate Test Packages
+
+on:
+  workflow_call:
+    inputs:
+      comment_body:
+        description: "The comment body to check for /generate-test-packages command"
+        type: string
+        required: true
+      comment_user:
+        description: "The user who made the comment"
+        type: string
+        required: true
+      comment_id:
+        description: "The comment ID (for adding reaction)"
+        type: string
+        required: true
+      issue_number:
+        description: "The issue/PR number"
+        type: number
+        required: true
+      dependencies:
+        description: 'A comma separated list of owner/repo dependencies'
+        type: string
+        required: false
+
+jobs:
+  check-command:
+    runs-on: ubuntu-latest
+    outputs:
+      triggered: ${{ steps.check.outputs.triggered }}
+      pr_sha: ${{ steps.pr-info.outputs.sha }}
+      retention_days: ${{ steps.check.outputs.retention_days }}
+    steps:
+      - name: Check for generate-test-packages command
+        id: check
+        env:
+          COMMENT_BODY: ${{ inputs.comment_body }}
+        run: |
+          if [[ "$COMMENT_BODY" =~ ^/generate-test-packages ]]; then
+            echo "triggered=true" >> $GITHUB_OUTPUT
+
+            # Parse optional retention days (e.g., "/generate-test-packages 14")
+            RETENTION=$(echo "$COMMENT_BODY" | grep -oP '/generate-test-packages\s+\K[0-9]+' || echo "7")
+            if [ "$RETENTION" -lt 1 ]; then RETENTION=1; fi
+            if [ "$RETENTION" -gt 90 ]; then RETENTION=90; fi
+            echo "retention_days=$RETENTION" >> $GITHUB_OUTPUT
+            echo "Command detected with $RETENTION day retention"
+          else
+            echo "triggered=false" >> $GITHUB_OUTPUT
+            echo "Comment does not contain /generate-test-packages command"
+          fi
+        shell: bash
+
+      - name: Check permissions
+        if: steps.check.outputs.triggered == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PERMISSION=$(gh api repos/${{ github.repository }}/collaborators/${{ inputs.comment_user }}/permission --jq '.permission')
+          if [[ "$PERMISSION" != "admin" && "$PERMISSION" != "write" ]]; then
+            echo "User ${{ inputs.comment_user }} does not have write permission"
+            exit 1
+          fi
+          echo "User has $PERMISSION permission - authorized"
+        shell: bash
+
+      - name: Add reaction
+        if: steps.check.outputs.triggered == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/${{ github.repository }}/issues/comments/${{ inputs.comment_id }}/reactions \
+            -X POST -f content='eyes'
+        shell: bash
+
+      - name: Get PR info
+        if: steps.check.outputs.triggered == 'true'
+        id: pr-info
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SHA=$(gh api repos/${{ github.repository }}/pulls/${{ inputs.issue_number }} --jq '.head.sha')
+          echo "sha=$SHA" >> $GITHUB_OUTPUT
+          echo "PR #${{ inputs.issue_number }} head SHA: $SHA"
+        shell: bash
+
+  build:
+    needs: check-command
+    if: needs.check-command.outputs.triggered == 'true'
+    uses: linuxmint/github-actions/.github/workflows/do-builds.yml@master
+    with:
+      commit_id: ${{ needs.check-command.outputs.pr_sha }}
+      upload_artifacts: true
+      artifact_retention_days: ${{ fromJSON(needs.check-command.outputs.retention_days) }}
+      skip_codespell: true
+      dependencies: ${{ inputs.dependencies }}
+
+  post-comment:
+    needs: [check-command, build]
+    if: needs.check-command.outputs.triggered == 'true' && always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post comment with artifact links
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          RETENTION_DAYS=${{ needs.check-command.outputs.retention_days }}
+
+          if [ "${{ needs.build.result }}" == "success" ]; then
+            BODY="**Test packages generated successfully!**
+
+          Download from the [workflow run]($RUN_URL) (available for $RETENTION_DAYS days)."
+          else
+            BODY="**Test package generation failed.**
+
+          See the [workflow run]($RUN_URL) for details."
+          fi
+
+          gh api repos/${{ github.repository }}/issues/${{ inputs.issue_number }}/comments \
+            -X POST -f body="$BODY"
+        shell: bash
