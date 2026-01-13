@@ -28,7 +28,7 @@ jobs:
   check-command:
     runs-on: ubuntu-latest
     outputs:
-      triggered: ${{ steps.check.outputs.triggered }}
+      triggered: ${{ steps.check.outputs.triggered == 'true' && steps.perm-check.outputs.authorized == 'true' }}
       pr_sha: ${{ steps.pr-info.outputs.sha }}
       retention_days: ${{ steps.check.outputs.retention_days }}
     steps:
@@ -53,20 +53,21 @@ jobs:
         shell: bash
 
       - name: Check permissions
+        id: perm-check
         if: steps.check.outputs.triggered == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PERMISSION=$(gh api repos/${{ github.repository }}/collaborators/${{ inputs.comment_user }}/permission --jq '.permission')
+          PERMISSION=$(gh api repos/${{ github.repository }}/collaborators/${{ inputs.comment_user }}/permission --jq '.permission' 2>/dev/null || echo "none")
           if [[ "$PERMISSION" != "admin" && "$PERMISSION" != "write" ]]; then
-            echo "User ${{ inputs.comment_user }} does not have write permission"
-            exit 1
+            echo "authorized=false" >> $GITHUB_OUTPUT
+          else
+            echo "authorized=true" >> $GITHUB_OUTPUT
           fi
-          echo "User has $PERMISSION permission - authorized"
         shell: bash
 
       - name: Add reaction
-        if: steps.check.outputs.triggered == 'true'
+        if: steps.check.outputs.triggered == 'true' && steps.perm-check.outputs.authorized == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -75,7 +76,7 @@ jobs:
         shell: bash
 
       - name: Get PR info
-        if: steps.check.outputs.triggered == 'true'
+        if: steps.check.outputs.triggered == 'true' && steps.perm-check.outputs.authorized == 'true'
         id: pr-info
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
