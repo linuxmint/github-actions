@@ -117,22 +117,24 @@ jobs:
           mv ../*.*deb ./output/packages
         shell: bash
 
+      - name: Upload build artifacts
+        if: ${{ inputs.upload_artifacts }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-${{ inputs.mint_version }}
+          path: |
+            output/packages/*
+            output/*.changes
+          retention-days: ${{ inputs.artifact_retention_days }}
+
       - name: Bundle packages
-        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || inputs.upload_artifacts }}
+        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
         uses: TheDoctor0/zip-release@0.7.6
         with:
           type: 'tar'
           filename: 'packages.tar.gz'
           path: packages
           directory: ./output
-
-      - name: Upload build artifacts
-        if: ${{ inputs.upload_artifacts }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: packages-${{ inputs.mint_version }}
-          path: output/packages.tar.gz
-          retention-days: ${{ inputs.artifact_retention_days }}
 
       #### Release steps (push/workflow_dispatch only)
 
