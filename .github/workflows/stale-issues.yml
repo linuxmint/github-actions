@@ -35,7 +35,7 @@ jobs:
             any activity in over 2 years.
 
             If this issue is still relevant:
-            - Please test on a current version of Linux Mint
+            - Please test on a current version of this package.
             - Add a comment with your findings
 
             If no activity occurs in the next 30 days, this issue will be
@@ -43,7 +43,7 @@ jobs:
           close-issue-message: |
             This issue has been automatically closed due to inactivity.
 
-            If you can still reproduce this issue on a current version of Linux Mint,
+            If you can still reproduce this issue on a current version,
             please feel free to reopen it with updated information.
           close-issue-reason: 'not_planned'
           # Don't touch PRs
