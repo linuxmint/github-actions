@@ -1,0 +1,53 @@
+name: Stale Issues
+
+on:
+  workflow_call:
+    inputs:
+      days-before-stale:
+        description: 'Days of inactivity before marking stale'
+        required: false
+        default: 730
+        type: number
+      days-before-close:
+        description: 'Days after stale label before closing'
+        required: false
+        default: 30
+        type: number
+      dry-run:
+        description: 'Dry run - log actions without making changes'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/stale@v9
+        with:
+          days-before-stale: ${{ inputs.days-before-stale }}
+          days-before-close: ${{ inputs.days-before-close }}
+          stale-issue-label: 'stale'
+          stale-issue-message: |
+            This issue has been automatically marked as stale because it has not had
+            any activity in over 2 years.
+
+            If this issue is still relevant:
+            - Please test on a current version of Linux Mint
+            - Add a comment with your findings
+
+            If no activity occurs in the next 30 days, this issue will be
+            automatically closed. Issues can be reopened if needed.
+          close-issue-message: |
+            This issue has been automatically closed due to inactivity.
+
+            If you can still reproduce this issue on a current version of Linux Mint,
+            please feel free to reopen it with updated information.
+          close-issue-reason: 'not_planned'
+          # Don't touch PRs
+          days-before-pr-stale: -1
+          days-before-pr-close: -1
+          # Dry run mode - log only, no changes
+          debug-only: ${{ inputs.dry-run }}
