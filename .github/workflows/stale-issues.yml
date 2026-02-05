@@ -49,7 +49,6 @@ jobs:
           # Don't touch PRs
           days-before-pr-stale: -1
           days-before-pr-close: -1
-          random-issue-order: true
           operations-per-run: 100
           # Dry run mode - log only, no changes
           debug-only: ${{ inputs.dry-run }}
