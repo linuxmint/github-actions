@@ -4,7 +4,7 @@ patterns:
     - name: global_reexec_self
       regex: 'global\.reexec_self\s*\('
       message: |
-          `global.reexec_self()` restarts Cinnamon. This should never be used in third-party code.
+          Do not call `global.reexec_self()` directly. Use `Main.restartCinnamon()` instead.
       severity: warning
       extensions:
           - .js
@@ -12,7 +12,7 @@ patterns:
     - name: global_real_restart
       regex: 'global\.real_restart\s*\('
       message: |
-          `global.real_restart()` restarts Cinnamon. This should never be used in third-party code.
+          Do not call `global.real_restart()` directly. Use `Main.restartCinnamon()` instead.
       severity: warning
       extensions:
           - .js
@@ -135,17 +135,6 @@ patterns:
       regex: 'global\.create_pointer_barrier\s*\('
       message: |
           `global.create_pointer_barrier()` creates invisible barriers that trap the mouse cursor.
-          This should never be used in third-party code.
-      severity: warning
-      extensions:
-          - .js
-
-    # -- Process Killing --
-
-    - name: meta_window_kill
-      regex: '\.kill\s*\(\s*\)'
-      message: |
-          `meta_window.kill()` sends SIGKILL to a window's process with no chance to save data.
           This should never be used in third-party code.
       severity: warning
       extensions:
