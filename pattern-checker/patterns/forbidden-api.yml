@@ -1,0 +1,163 @@
+patterns:
+    # -- Crash / Restart / Terminate --
+
+    - name: global_reexec_self
+      regex: 'global\.reexec_self\s*\('
+      message: |
+          `global.reexec_self()` restarts Cinnamon. This should never be used in third-party code.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: global_real_restart
+      regex: 'global\.real_restart\s*\('
+      message: |
+          `global.real_restart()` restarts Cinnamon. This should never be used in third-party code.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: meta_quit
+      regex: 'Meta\.(quit|exit)\s*\('
+      message: |
+          `Meta.quit()` / `Meta.exit()` terminates Cinnamon. This should never be used in third-party code.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: global_segfault
+      regex: 'global\.segfault\s*\('
+      message: |
+          `global.segfault()` deliberately crashes Cinnamon. This must never be used in third-party code.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: global_alloc_leak
+      regex: 'global\.alloc_leak\s*\('
+      message: |
+          `global.alloc_leak()` allocates unreclaimable memory and can OOM the system.
+          This must never be used in third-party code.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: cinnamon_breakpoint
+      regex: 'Cinnamon\.breakpoint\s*\('
+      message: |
+          `Cinnamon.breakpoint()` sends SIGTRAP which will crash Cinnamon if no debugger is attached.
+          This must never be used in third-party code.
+      severity: warning
+      extensions:
+          - .js
+
+    # -- Input Hijacking / Desktop Freeze --
+
+    - name: global_begin_modal
+      regex: 'global\.begin_modal\s*\('
+      message: |
+          `global.begin_modal()` grabs all keyboard and mouse input exclusively.
+          Improper use will freeze the desktop. This should never be used in third-party code.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: global_set_stage_input_mode
+      regex: 'global\.set_stage_input_mode\s*\('
+      message: |
+          `global.set_stage_input_mode()` controls how all input events are routed.
+          Misuse can make the desktop unresponsive. This should never be used in third-party code.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: global_set_stage_input_region
+      regex: 'global\.set_stage_input_region\s*\('
+      message: |
+          `global.set_stage_input_region()` controls which screen regions accept input.
+          Misuse can make the desktop unclickable. This should never be used in third-party code.
+      severity: warning
+      extensions:
+          - .js
+
+    # -- Window Manager / Compositor Internals --
+
+    - name: meta_begin_grab_op
+      regex: '\.begin_grab_op\s*\('
+      message: |
+          `begin_grab_op()` initiates a window grab operation (move/resize).
+          This is an internal WM function and should never be used in third-party code.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: meta_keybindings_set_custom_handler
+      regex: 'Meta\.keybindings_set_custom_handler\s*\('
+      message: |
+          `Meta.keybindings_set_custom_handler()` overrides built-in keybinding handlers.
+          This can hijack window switching, workspace navigation, etc.
+          This should never be used in third-party code.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: global_reparent_actor
+      regex: 'global\.reparentActor\s*\('
+      message: |
+          `global.reparentActor()` moves actors in the compositor scene graph.
+          Misuse can break the entire desktop UI. This should never be used in third-party code.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: meta_disable_unredirect
+      regex: 'Meta\.(disable|enable)_unredirect_for_display\s*\('
+      message: |
+          `Meta.disable_unredirect_for_display()` / `Meta.enable_unredirect_for_display()`
+          affect compositing globally and can cause visual glitches.
+          This should never be used in third-party code.
+      severity: warning
+      extensions:
+          - .js
+
+    # -- Pointer / Cursor Manipulation --
+
+    - name: global_set_pointer
+      regex: 'global\.set_pointer\s*\('
+      message: |
+          `global.set_pointer()` moves the mouse cursor to arbitrary coordinates.
+          This should never be used in third-party code.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: global_create_pointer_barrier
+      regex: 'global\.create_pointer_barrier\s*\('
+      message: |
+          `global.create_pointer_barrier()` creates invisible barriers that trap the mouse cursor.
+          This should never be used in third-party code.
+      severity: warning
+      extensions:
+          - .js
+
+    # -- Process Killing --
+
+    - name: meta_window_kill
+      regex: '\.kill\s*\(\s*\)'
+      message: |
+          `meta_window.kill()` sends SIGKILL to a window's process with no chance to save data.
+          This should never be used in third-party code.
+      severity: warning
+      extensions:
+          - .js
+
+    # -- Surveillance --
+
+    - name: cinnamon_recorder
+      regex: 'new\s+Cinnamon\.Recorder\s*\('
+      message: |
+          `Cinnamon.Recorder` records the screen as video.
+          This should never be used in third-party code.
+      severity: warning
+      extensions:
+          - .js

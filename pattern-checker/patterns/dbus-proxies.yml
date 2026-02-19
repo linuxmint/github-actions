@@ -1,0 +1,46 @@
+patterns:
+    # Detect raw DBus interface usage where Cinnamon provides pre-built proxies.
+
+    - name: raw_session_manager_dbus
+      regex: 'org\.gnome\.SessionManager'
+      message: |
+          Use `imports.misc.gnomeSession` instead of creating raw DBus proxies.
+          Available: `SessionManager()`, `Presence()`, `Inhibitor()`.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: raw_screensaver_dbus
+      regex: 'org\.cinnamon\.ScreenSaver'
+      message: |
+          Use `imports.misc.screenSaver.ScreenSaverProxy()` instead of creating a raw DBus proxy.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: raw_power_dbus
+      regex: 'org\.cinnamon\.SettingsDaemon\.Power'
+      message: |
+          Use `imports.misc.interfaces.getDBusProxy("org.cinnamon.SettingsDaemon.Power")`
+          (also `.Power.Screen` and `.Power.Keyboard`) instead of creating raw DBus proxies.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: raw_mpris_dbus
+      regex: 'org\.mpris\.MediaPlayer2'
+      message: |
+          Use `imports.misc.interfaces.getDBusProxyWithOwner("org.mpris.MediaPlayer2", owner)`
+          or `imports.misc.mprisPlayer.getMprisPlayerManager()` for a higher-level API.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: raw_notifications_dbus
+      regex: 'org\.freedesktop\.Notifications'
+      message: |
+          Use `imports.ui.messageTray` (`Notification` + `Source`) for sending notifications.
+          Cinnamon implements this interface internally via `notificationDaemon.js`.
+      severity: warning
+      extensions:
+          - .js

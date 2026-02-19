@@ -1,0 +1,19 @@
+# Pattern Checker Configuration
+# Pattern definitions are in the patterns/ subdirectory.
+
+settings:
+    # File patterns to always exclude from checking
+    exclude_patterns:
+        - "*.po"
+        - "*.pot"
+        - "ChangeLog"
+        - "NEWS"
+        - "*.md"
+        - "*.svg"
+        - "*.desktop"
+
+    # Maximum number of findings to report per file (prevents spam)
+    max_findings_per_file: 10
+
+    # Whether to fail the workflow on findings (recommended: false)
+    fail_on_match: false

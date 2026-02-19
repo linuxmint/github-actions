@@ -1,0 +1,18 @@
+name: Pattern Checker
+
+on:
+    pull_request:
+        branches:
+            - master
+    push:
+        branches:
+            - master
+
+jobs:
+    pattern-check:
+        uses: linuxmint/github-actions/.github/workflows/pattern-checker.yml@master
+        with:
+            ############################## Path to a custom pattern config file in this repo (optional).
+            config_file:
+            ############################## Comma-separated list of file extensions to check (optional, e.g., .py,.c,.h).
+            file_extensions:

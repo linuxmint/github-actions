@@ -1,0 +1,41 @@
+name: Pattern Checker
+
+on:
+    workflow_call:
+        inputs:
+            config_file:
+                description: 'Path to custom pattern check configuration file.'
+                required: false
+                type: string
+                default: ''
+            file_extensions:
+                description: 'Comma-separated list of file extensions to check (e.g., .py,.c,.h).'
+                required: false
+                type: string
+                default: ''
+            only_warn:
+                description: 'Only warn, do not fail the workflow.'
+                required: false
+                type: boolean
+                default: true
+
+jobs:
+    pattern-check:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout calling repo
+              uses: actions/checkout@v4
+
+            - name: Checkout github-actions repo
+              uses: actions/checkout@v4
+              with:
+                  repository: linuxmint/github-actions
+                  path: _github-actions
+
+            - name: Run Pattern Checker
+              uses: ./_github-actions/pattern-checker
+              with:
+                  github_token: ${{ github.token }}
+                  config_file: ${{ inputs.config_file }}
+                  file_extensions: ${{ inputs.file_extensions }}
+                  only_warn: ${{ inputs.only_warn }}

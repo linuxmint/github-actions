@@ -1,0 +1,80 @@
+patterns:
+    # -- Gtk allowlist approach --
+    # Flag any Gtk. usage EXCEPT known-safe APIs.
+
+    - name: gtk_forbidden
+      regex: '\bGtk\.(?!IconTheme|DirectionType|TextDirection|PositionType|accelerator_parse|accelerator_get_label|accelerator_name|Settings|Widget\.get_default_direction)'
+      message: |
+          Most Gtk APIs cannot be used in the Cinnamon runtime.
+          Use St (Shell Toolkit) equivalents instead.
+          Allowed Gtk APIs: `IconTheme`, `DirectionType`, `TextDirection`, `PositionType`,
+          `accelerator_parse`, `accelerator_get_label`, `accelerator_name`,
+          `Settings`, `Widget.get_default_direction`.
+      severity: warning
+      extensions:
+          - .js
+
+    # -- Icon Theme --
+
+    - name: has_icon
+      regex: '\bhas_icon\s*\('
+      message: |
+          `has_icon()` only checks theme folders and does not check extra, legacy folders.
+          Consider using `lookup_icon()` instead, which checks all icon locations.
+
+          See: https://github.com/linuxmint/cinnamon/issues/13270
+      severity: warning
+      extensions:
+          - .py
+          - .c
+          - .h
+          - .js
+          - .vala
+
+    # -- GdkPixbuf --
+
+    - name: gdkpixbuf_loading
+      regex: 'GdkPixbuf\.Pixbuf\.(new_from_file|new_from_stream|new_from_data|new_from_resource|new_from_bytes)\s*\('
+      message: |
+          Do not load pixbufs directly with GdkPixbuf. Use `St.TextureCache` instead.
+      severity: warning
+      extensions:
+          - .js
+
+    # -- Gdk --
+
+    - name: gdk_screen
+      regex: 'Gdk\.Screen\.'
+      message: |
+          Do not use `Gdk.Screen` in the Cinnamon runtime.
+          Use `Meta.Display` (via `global.display`/ `Main.layoutManager` for monitor information instead.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: gdk_display
+      regex: 'Gdk\.Display\.'
+      message: |
+          Do not use `Gdk.Display` in the Cinnamon runtime.
+          Use `Meta.Display` (via `global.display`) instead.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: gdk_monitor
+      regex: 'Gdk\.Monitor\.'
+      message: |
+          Do not use `Gdk.Monitor` in the Cinnamon runtime.
+          Use `Main.layoutManager.monitors` or `Meta.Display` monitor APIs instead.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: gdk_keymap
+      regex: 'Gdk\.Keymap\.'
+      message: |
+          Do not use `Gdk.Keymap` in the Cinnamon runtime.
+          Use Clutter or Meta keyboard state APIs instead.
+      severity: warning
+      extensions:
+          - .js

@@ -1,0 +1,105 @@
+patterns:
+    # APIs that have Cinnamon wrapper equivalents.
+    # Spices should use the wrappers instead of the raw APIs.
+
+    # -- App System --
+
+    - name: gio_desktop_app_info
+      regex: 'new\s+Gio\.DesktopAppInfo\s*\('
+      message: |
+          Use `Cinnamon.AppSystem.get_default().lookup_app(id)` instead of creating
+          `Gio.DesktopAppInfo` directly. `CinnamonApp` provides unified app state
+          tracking (windows, PIDs, running state) on top of the desktop entry info.
+      severity: warning
+      extensions:
+          - .js
+
+    # -- Recent Files --
+
+    - name: gtk_recent_manager
+      regex: 'Gtk\.RecentManager'
+      message: |
+          Use `imports.misc.docInfo.getDocManager()` instead of `Gtk.RecentManager`.
+          `DocManager` provides a cached, sorted, limited list of recent documents
+          with idle-delayed change signals.
+      severity: warning
+      extensions:
+          - .js
+
+    # -- Volume / Mount Management --
+
+    - name: gio_volume_monitor
+      regex: 'Gio\.VolumeMonitor'
+      message: |
+          Use `Main.placesManager` instead of `Gio.VolumeMonitor` directly.
+          `PlacesManager` provides a unified API for bookmarks, mounts, volumes,
+          and drives with debounced updates and safe eject/unmount handling.
+      severity: warning
+      extensions:
+          - .js
+
+    # -- Notifications --
+
+    - name: gio_notification
+      regex: 'new\s+Gio\.Notification\s*\('
+      message: |
+          Use `imports.ui.messageTray` (`Notification` + `Source`) instead of `Gio.Notification`.
+          Cinnamon does not use GNotification internally.
+      severity: warning
+      extensions:
+          - .js
+
+    # -- File Dialogs --
+
+    - name: file_dialog
+      regex: 'Gtk\.FileChooser'
+      message: |
+          Use `imports.misc.fileDialog` (`open()`, `save()`, `openFolder()`) instead.
+          Gtk dialogs cannot be used in the Cinnamon runtime.
+      severity: warning
+      extensions:
+          - .js
+
+    # -- Keybindings --
+
+    - name: raw_keybinding
+      regex: 'global\.display\.(add_custom_keybinding|remove_keybinding)\s*\('
+      message: |
+          Use `Main.keybindingManager.addHotKey()` / `removeHotKey()` instead of
+          calling `global.display` keybinding methods directly.
+          For xlets, use `addXletHotKey()` / `removeXletHotKey()` for proper
+          multi-instance support.
+      severity: warning
+      extensions:
+          - .js
+
+    # -- Pointer --
+
+    - name: raw_pointer_tracking
+      regex: 'Clutter\.get_default_backend\(\)\.get_default_seat\(\)'
+      message: |
+          Use `imports.misc.pointerTracker.PointerTracker` instead of accessing
+          the Clutter seat directly for pointer operations.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: raw_warp_pointer
+      regex: '\.warp_pointer\s*\('
+      message: |
+          Use `imports.misc.pointerTracker.PointerTracker` instead of calling
+          `seat.warp_pointer()` directly.
+      severity: warning
+      extensions:
+          - .js
+
+    # -- Image/Icon Loading --
+
+    - name: raw_icon_loading
+      regex: 'Gio\.FileIcon|Gio\.ThemedIcon|Gio\.BytesIcon'
+      message: |
+          Consider using `St.TextureCache` or `St.Icon` for loading icons.
+          `St.TextureCache.get_default().load_gicon()` handles caching and scaling.
+      severity: info
+      extensions:
+          - .js

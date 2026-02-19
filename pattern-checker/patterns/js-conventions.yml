@@ -1,0 +1,34 @@
+patterns:
+    - name: lang_bind
+      regex: '\bLang\.bind\s*\('
+      message: |
+          `Lang.bind()` is deprecated. Use arrow functions (`() => {}`) or `Function.prototype.bind()` instead.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: shell_string_spawn
+      regex: '\b(spawnCommandLine|spawnCommandLineAsync|spawnCommandLineAsyncIO|spawn_command_line_async|spawn_command_line_sync)\s*\('
+      message: |
+          Prefer argument vector spawn functions over shell command strings.
+          This is especially important when arguments include untrusted input (user data,
+          filenames, settings values, etc.) as shell strings are vulnerable to injection.
+          Static command strings are generally fine, but argv is always safer.
+          Use `Util.spawn(["cmd", "arg1", "arg2"])` or `Util.trySpawn()` instead.
+      severity: info
+      extensions:
+          - .js
+          - .py
+          - .c
+          - .h
+          - .vala
+
+    - name: tweener_usage
+      regex: '\b(Tweener\.addTween|Tweener\.removeTweens|Tweener\.pauseTweens|Tweener\.resumeTweens|imports\.ui\.tweener)\b'
+      message: |
+          The Tweener module is deprecated. Use Clutter actor easing instead.
+          Actors have `ease()` and `ease_property()` methods (patched in `environment.js`).
+          Example: `actor.ease({ opacity: 255, duration: 200, mode: Clutter.AnimationMode.EASE_OUT_QUAD });`
+      severity: warning
+      extensions:
+          - .js

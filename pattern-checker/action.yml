@@ -1,0 +1,33 @@
+name: 'Pattern Checker'
+description: 'Check PR diffs for red-flag patterns and post warnings'
+
+inputs:
+    github_token:
+        description: 'GitHub token for API access'
+        required: true
+    config_file:
+        description: 'Path to custom pattern configuration file'
+        required: false
+        default: ''
+    file_extensions:
+        description: 'Comma-separated list of file extensions to check (e.g., .py,.c,.h)'
+        required: false
+        default: ''
+    only_warn:
+        description: 'Only warn, do not fail the workflow'
+        required: false
+        default: 'true'
+
+runs:
+    using: 'composite'
+    steps:
+        - run: pip3 install requests pyyaml --quiet
+          shell: bash
+
+        - run: python3 "$GITHUB_ACTION_PATH/pr_scanner.py"
+          env:
+            PATTERN_CHECK_TOKEN: ${{ inputs.github_token }}
+            PATTERN_CHECK_CONFIG: ${{ inputs.config_file }}
+            PATTERN_CHECK_EXTENSIONS: ${{ inputs.file_extensions }}
+            PATTERN_CHECK_ONLY_WARN: ${{ inputs.only_warn }}
+          shell: bash

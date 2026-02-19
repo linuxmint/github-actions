@@ -1,0 +1,113 @@
+patterns:
+    - name: sync_spawn_command_line
+      regex: '(g_spawn_command_line_sync|GLib\.spawn_command_line_sync)\s*\('
+      message: |
+          Synchronous process spawning blocks the main loop.
+          Use `GLib.spawn_command_line_async()` or `Gio.Subprocess` instead.
+      severity: warning
+      extensions:
+          - .py
+          - .c
+          - .h
+          - .js
+          - .vala
+
+    - name: sync_spawn
+      regex: '(g_spawn_sync|GLib\.spawn_sync)\s*\('
+      message: |
+          Synchronous process spawning blocks the main loop.
+          Use `GLib.spawn_async()` or `Gio.Subprocess` instead.
+      severity: warning
+      extensions:
+          - .py
+          - .c
+          - .h
+          - .js
+          - .vala
+
+    - name: sync_file_load_contents
+      regex: '(g_file_load_contents|\.load_contents)\s*\((?!.*async)'
+      message: |
+          Synchronous `load_contents()` blocks the main loop.
+          Use `load_contents_async()` instead.
+      severity: warning
+      extensions:
+          - .py
+          - .c
+          - .h
+          - .js
+          - .vala
+
+    - name: sync_file_get_contents
+      regex: '(g_file_get_contents|GLib\.file_get_contents)\s*\('
+      message: |
+          Synchronous `file_get_contents()` blocks the main loop.
+          Use `Gio.File.load_contents_async()` instead.
+      severity: warning
+      extensions:
+          - .py
+          - .c
+          - .h
+          - .js
+          - .vala
+
+    - name: sync_get_file_contents_utf8
+      regex: 'Cinnamon\.get_file_contents_utf8_sync\s*\('
+      message: |
+          Synchronous file read blocks the main loop.
+          Use `Gio.File.load_contents_async()` instead.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: sync_file_replace_contents
+      regex: '(g_file_replace_contents|\.replace_contents)\s*\((?!.*async)'
+      message: |
+          Synchronous `replace_contents()` blocks the main loop.
+          Use `replace_contents_async()` instead.
+      severity: warning
+      extensions:
+          - .py
+          - .c
+          - .h
+          - .js
+          - .vala
+
+    - name: sync_file_query_info
+      regex: '(g_file_query_info|\.query_info)\s*\((?!.*async)'
+      message: |
+          Synchronous `query_info()` blocks the main loop.
+          Use `query_info_async()` instead.
+      severity: warning
+      extensions:
+          - .py
+          - .c
+          - .h
+          - .js
+          - .vala
+
+    - name: sync_file_enumerate_children
+      regex: '(g_file_enumerate_children|\.enumerate_children)\s*\((?!.*async)'
+      message: |
+          Synchronous `enumerate_children()` blocks the main loop.
+          Use `enumerate_children_async()` instead.
+      severity: warning
+      extensions:
+          - .py
+          - .c
+          - .h
+          - .js
+          - .vala
+
+    - name: sync_soup_send_message
+      regex: '(soup_session_send_message|\.send_message)\s*\('
+      message: |
+          Synchronous `send_message()` blocks the main loop.
+          Use async HTTP requests instead.
+      severity: warning
+      extensions:
+          - .py
+          - .c
+          - .h
+          - .js
+          - .vala
