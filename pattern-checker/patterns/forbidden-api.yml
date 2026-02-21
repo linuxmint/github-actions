@@ -101,15 +101,6 @@ patterns:
       extensions:
           - .js
 
-    - name: global_reparent_actor
-      regex: 'global\.reparentActor\s*\('
-      message: |
-          `global.reparentActor()` moves actors in the compositor scene graph.
-          Misuse can break the entire desktop UI. This should never be used in third-party code.
-      severity: warning
-      extensions:
-          - .js
-
     - name: meta_disable_unredirect
       regex: 'Meta\.(disable|enable)_unredirect_for_display\s*\('
       message: |
@@ -126,7 +117,8 @@ patterns:
       regex: 'global\.set_pointer\s*\('
       message: |
           `global.set_pointer()` moves the mouse cursor to arbitrary coordinates.
-          This should never be used in third-party code.
+          This should never be used in desklets or applets, but may potentially be acceptable in
+          extensions.
       severity: warning
       extensions:
           - .js
@@ -135,7 +127,8 @@ patterns:
       regex: 'global\.create_pointer_barrier\s*\('
       message: |
           `global.create_pointer_barrier()` creates invisible barriers that trap the mouse cursor.
-          This should never be used in third-party code.
+          This should never be used in desklets or applets but may potentially be acceptable in
+          extensions.
       severity: warning
       extensions:
           - .js
