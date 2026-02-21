@@ -99,6 +99,32 @@ patterns:
           - .js
           - .vala
 
+    - name: sync_file_test
+      regex: '(g_file_test|GLib\.file_test)\s*\('
+      message: |
+          `file_test()` is a synchronous stat call that can block on slow/network filesystems.
+          Prefer attempting the operation and handling a `Gio.IOErrorEnum.NOT_FOUND` error instead.
+      severity: warning
+      extensions:
+          - .py
+          - .c
+          - .h
+          - .js
+          - .vala
+
+    - name: sync_file_query_exists
+      regex: '(g_file_query_exists|\.query_exists)\s*\('
+      message: |
+          `query_exists()` is a synchronous call that can block on slow/network filesystems.
+          Prefer attempting the operation and handling a `Gio.IOErrorEnum.NOT_FOUND` error instead.
+      severity: warning
+      extensions:
+          - .py
+          - .c
+          - .h
+          - .js
+          - .vala
+
     - name: sync_soup_send_message
       regex: '(soup_session_send_message|\.send_message)\s*\('
       message: |
