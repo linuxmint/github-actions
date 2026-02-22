@@ -4,6 +4,7 @@ import sys
 import os
 import json
 import re
+import hashlib
 import subprocess
 import fnmatch
 import argparse
@@ -179,11 +180,25 @@ class PatternChecker:
 
         return "\n".join(lines)
 
-    def format_github_comment(self):
+    def _make_diff_link(self, filename, line_num, repository, event_type, ref):
+        file_hash = hashlib.sha256(filename.encode()).hexdigest()
+        anchor = f"diff-{file_hash}R{line_num}"
+
+        if event_type == "pull_request":
+            return f"https://github.com/{repository}/pull/{ref}/files#{anchor}"
+        else:
+            return f"https://github.com/{repository}/commit/{ref}#{anchor}"
+
+    def format_github_comment(self, repository=None, event_type=None, ref=None):
         if not self.findings:
             return None
 
-        comment = "## Pattern Check Results\n\n"
+        comment = "## Best-practices scanner\n\n"
+        comment += "This is a regex-based check for API usage that can pose security, performance or\n";
+        comment += "maintainability issues, or that may already be provided by Cinnamon. Having code flagged\n";
+        comment += "by it doesn't automatically disqualify a pull request.\n\n";
+        comment += "### This check is not perfect will not replace a normal review.\n";
+        comment += "---\n"
         comment += f"Found {len(self.findings)} potential issue(s):\n\n"
 
         by_pattern = {}
@@ -196,7 +211,11 @@ class PatternChecker:
             comment += f"### {severity_emoji} {pattern_name}\n\n"
 
             for finding in pattern_findings:
-                comment += f"**{finding['filename']}:{finding['line_num']}**\n"
+                if repository and event_type and ref:
+                    link = self._make_diff_link(finding['filename'], finding['line_num'], repository, event_type, ref)
+                    comment += f"**[{finding['filename']}:{finding['line_num']}]({link})**\n"
+                else:
+                    comment += f"**{finding['filename']}:{finding['line_num']}**\n"
                 comment += f"```\n{finding['line_content'].strip()}\n```\n"
                 comment += f"{finding['message']}\n\n"
 
@@ -318,7 +337,7 @@ def run_github_action():
 
     if checker.findings:
         print(f"::warning::Found {len(checker.findings)} pattern matches")
-        comment = checker.format_github_comment()
+        comment = checker.format_github_comment(repository, event_type, ref)
         if comment:
             try:
                 import requests
