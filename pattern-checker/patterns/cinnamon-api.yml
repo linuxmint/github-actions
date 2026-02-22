@@ -92,14 +92,3 @@ patterns:
       severity: warning
       extensions:
           - .js
-
-    # -- Image/Icon Loading --
-
-    - name: raw_icon_loading
-      regex: 'Gio\.FileIcon|Gio\.ThemedIcon|Gio\.BytesIcon'
-      message: |
-          Consider using `St.TextureCache` or `St.Icon` for loading icons.
-          `St.TextureCache.get_default().load_gicon()` handles caching and scaling.
-      severity: info
-      extensions:
-          - .js
