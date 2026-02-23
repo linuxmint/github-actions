@@ -275,26 +275,28 @@ def get_github_diff(github_token, repository, event_type, ref):
         "Accept": "application/vnd.github.v3+json",
     }
 
+    file_patches = {}
+
     if event_type == "pull_request":
         url = f"https://api.github.com/repos/{repository}/pulls/{ref}/files"
-        response = requests.get(url, headers=headers)
-        if response.status_code != 200:
-            print(f"Failed to get PR files: {response.status_code}", file=sys.stderr)
-            sys.exit(1)
-        file_patches = {}
-        for f in response.json():
-            file_patches[f["filename"]] = f.get("patch", "")
-        return file_patches
+        while url:
+            response = requests.get(url, headers=headers, params={"per_page": 100})
+            if response.status_code != 200:
+                print(f"Failed to get PR files: {response.status_code}", file=sys.stderr)
+                sys.exit(1)
+            for f in response.json():
+                file_patches[f["filename"]] = f.get("patch", "")
+            url = response.links.get("next", {}).get("url")
     else:
         url = f"https://api.github.com/repos/{repository}/commits/{ref}"
         response = requests.get(url, headers=headers)
         if response.status_code != 200:
             print(f"Failed to get commit: {response.status_code}", file=sys.stderr)
             sys.exit(1)
-        file_patches = {}
         for f in response.json().get("files", []):
             file_patches[f["filename"]] = f.get("patch", "")
-        return file_patches
+
+    return file_patches
 
 
 def run_github_action():
