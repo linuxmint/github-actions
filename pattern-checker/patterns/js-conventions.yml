@@ -23,6 +23,27 @@ patterns:
           - .h
           - .vala
 
+    - name: global_screen
+      regex: '\bglobal\.screen\b'
+      message: |
+          `global.screen` is a deprecated compatibility shim for the removed `MetaScreen`.
+          Use the appropriate replacement instead:
+          - Workspace operations: `global.workspace_manager` (`get_n_workspaces()`,
+            `get_workspace_by_index()`, `append_new_workspace()`, `remove_workspace()`,
+            `override_workspace_layout()`, `toggle_desktop()`, `show_desktop()`,
+            `get_active_workspace()`, `get_active_workspace_index()`, `get_workspaces()`)
+          - Monitor info: `Main.layoutManager` (`monitors`, `primaryMonitor`, `primaryIndex`,
+            `focusMonitor`, `currentMonitor` — each with geometry, index, name, and
+            `inFullscreen` properties)
+          - Monitor by rect: `global.display.get_monitor_index_for_rect()`
+          - Display size: `global.display.get_size()`
+          - Mouse window: `Main.layoutManager.getWindowAtPointer()`
+          - Window xid: `metaWindow.get_xwindow()`
+          - Display: `global.display`
+      severity: warning
+      extensions:
+          - .js
+
     - name: tweener_usage
       regex: '\b(Tweener\.addTween|Tweener\.removeTweens|Tweener\.pauseTweens|Tweener\.resumeTweens|imports\.ui\.tweener)\b'
       message: |
