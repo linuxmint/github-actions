@@ -1,0 +1,57 @@
+patterns:
+    # -- Screensaver / Lock Screen Security --
+    # These patterns flag code that accesses screensaver internals.
+    # The screensaver manages PAM authentication, input grabbing, and
+    # session locking — third-party code should not interact with it.
+
+    - name: screensaver_imports
+      regex: 'imports\.(ui\.screensaver\.|misc\.authClient|misc\.screenSaver)'
+      message: |
+          Screensaver modules are internal to Cinnamon and must not be imported
+          by third-party code. This includes the lock screen, unlock dialog, PAM
+          authentication, and all screensaver widgets.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: screensaver_pam_helper
+      regex: 'cinnamon-screensaver-pam-helper'
+      message: |
+          Do not reference or spawn `cinnamon-screensaver-pam-helper`.
+          This is a privileged PAM authentication helper used internally by the screensaver.
+      severity: warning
+      extensions:
+          - .js
+          - .py
+
+    - name: backup_locker_dbus
+      regex: 'org\.cinnamon\.BackupLocker'
+      message: |
+          Do not make D-Bus calls to `org.cinnamon.BackupLocker`. This is a security
+          service that provides a backup lock screen when Cinnamon is unresponsive.
+          Calling `Unlock`, `ReleaseGrabs`, or `Quit` can disable lock screen security.
+      severity: warning
+      extensions:
+          - .js
+          - .py
+
+    - name: action_mode_write
+      regex: '(Main|imports\.ui\.main)\.actionMode\s*='
+      message: |
+          Do not write to `Main.actionMode`. This variable controls which keybindings
+          are active during lock screen, modal dialogs, etc. Modifying it can bypass
+          lock screen security.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: cursor_show_hide
+      regex: 'global\.stage\.(show_cursor|hide_cursor)\s*\('
+      message: |
+          Do not call `global.stage.show_cursor()` / `hide_cursor()`. These are used
+          internally by the screensaver to manage cursor visibility. Misuse can leave
+          the cursor permanently hidden. This may be used by Extensions but never desklets
+          or applets.
+      severity: warning
+      extensions:
+          - .js

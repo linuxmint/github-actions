@@ -92,3 +92,16 @@ patterns:
       severity: warning
       extensions:
           - .js
+
+    # -- UPower --
+
+    - name: raw_upower
+      regex: 'imports\.gi\.UPowerGlib'
+      message: |
+          Use `imports.misc.powerUtils` instead of `UPowerGlib` directly.
+          `powerUtils` provides shared helpers for battery icon names, device kind
+          strings/icons, level descriptions, and re-exports `UPDeviceKind`,
+          `UPDeviceState`, and `UPDeviceLevel` constants.
+      severity: warning
+      extensions:
+          - .js

@@ -30,8 +30,10 @@ patterns:
     - name: raw_mpris_dbus
       regex: 'org\.mpris\.MediaPlayer2'
       message: |
-          Use `imports.misc.interfaces.getDBusProxyWithOwner("org.mpris.MediaPlayer2", owner)`
-          or `imports.misc.mprisPlayer.getMprisPlayerManager()` for a higher-level API.
+          Use `imports.misc.mprisPlayer.getMprisPlayerManager()` for a high-level API
+          that automatically discovers and tracks MPRIS players, handles proxy setup,
+          and provides playback control, metadata, and capability accessors.
+          For lower-level access, use `imports.misc.interfaces.getDBusProxyWithOwner()`.
       severity: warning
       extensions:
           - .js
