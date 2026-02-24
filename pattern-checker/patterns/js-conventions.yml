@@ -44,6 +44,41 @@ patterns:
       extensions:
           - .js
 
+    - name: require_usage
+      regex: '\brequire\s*\('
+      message: |
+          `require()` is deprecated. Use the native CJS importer instead:
+          - For local xlet modules: `const Extension = imports.ui.extension;`
+            `const Me = Extension.getCurrentExtension();` then `Me.imports.myModule`
+          - For GI bindings: `const St = imports.gi.St;`
+          - For Cinnamon modules: `const Main = imports.ui.main;`
+      severity: warning
+      extensions:
+          - .js
+
+    - name: module_exports
+      regex: '\bmodule\.exports\b'
+      message: |
+          `module.exports` is deprecated. Use `var` to declare symbols you want
+          to export — the native CJS importer automatically exports top-level
+          `var` and `function` declarations. `let`, `const`, and `class`
+          declarations are module-private.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: file_utils_old_api
+      regex: '\b(requireModule|getModuleByIndex|unloadModule)\s*\('
+      message: |
+          `requireModule()`, `getModuleByIndex()`, and `unloadModule()` have been
+          removed from `fileUtils`. Use the native CJS importer instead:
+          `const Extension = imports.ui.extension;`
+          `const Me = Extension.getCurrentExtension();`
+          then access local modules via `Me.imports.myModule`.
+      severity: warning
+      extensions:
+          - .js
+
     - name: tweener_usage
       regex: '\b(Tweener\.addTween|Tweener\.removeTweens|Tweener\.pauseTweens|Tweener\.resumeTweens|imports\.ui\.tweener)\b'
       message: |
