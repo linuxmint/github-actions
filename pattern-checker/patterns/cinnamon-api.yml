@@ -98,7 +98,7 @@ patterns:
     - name: raw_upower
       regex: 'imports\.gi\.UPowerGlib'
       message: |
-          Use `imports.misc.powerUtils` instead of `UPowerGlib` directly.
+          (Cinnamon 6.8) Use `imports.misc.powerUtils` instead of `UPowerGlib` directly.
           `powerUtils` provides shared helpers for battery icon names, device kind
           strings/icons, level descriptions, and re-exports `UPDeviceKind`,
           `UPDeviceState`, and `UPDeviceLevel` constants.

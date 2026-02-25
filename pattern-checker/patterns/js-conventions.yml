@@ -47,7 +47,7 @@ patterns:
     - name: require_usage
       regex: '\brequire\s*\('
       message: |
-          `require()` is deprecated. Use the native CJS importer instead:
+          (Cinnamon 6.8) `require()` is deprecated. Use the native CJS importer instead:
           - For local xlet modules: `const Extension = imports.ui.extension;`
             `const Me = Extension.getCurrentExtension();` then `Me.imports.myModule`
           - For GI bindings: `const St = imports.gi.St;`
@@ -59,7 +59,7 @@ patterns:
     - name: module_exports
       regex: '\bmodule\.exports\b'
       message: |
-          `module.exports` is deprecated. Use `var` to declare symbols you want
+          (Cinnamon 6.8) `module.exports` is deprecated. Use `var` to declare symbols you want
           to export — the native CJS importer automatically exports top-level
           `var` and `function` declarations. `let`, `const`, and `class`
           declarations are module-private.
@@ -70,7 +70,7 @@ patterns:
     - name: file_utils_old_api
       regex: '\b(requireModule|getModuleByIndex|unloadModule)\s*\('
       message: |
-          `requireModule()`, `getModuleByIndex()`, and `unloadModule()` have been
+          (Cinnamon 6.8) `requireModule()`, `getModuleByIndex()`, and `unloadModule()` have been
           removed from `fileUtils`. Use the native CJS importer instead:
           `const Extension = imports.ui.extension;`
           `const Me = Extension.getCurrentExtension();`

@@ -21,7 +21,7 @@ patterns:
     - name: raw_power_dbus
       regex: 'org\.cinnamon\.SettingsDaemon\.Power'
       message: |
-          Use `imports.misc.interfaces.getDBusProxy("org.cinnamon.SettingsDaemon.Power")`
+          (Cinnamon 6.8) Use `imports.misc.interfaces.getDBusProxy("org.cinnamon.SettingsDaemon.Power")`
           (also `.Power.Screen` and `.Power.Keyboard`) instead of creating raw DBus proxies.
       severity: warning
       extensions:
@@ -30,7 +30,7 @@ patterns:
     - name: raw_mpris_dbus
       regex: 'org\.mpris\.MediaPlayer2'
       message: |
-          Use `imports.misc.mprisPlayer.getMprisPlayerManager()` for a high-level API
+          (Cinnamon 6.8) Use `imports.misc.mprisPlayer.getMprisPlayerManager()` for a high-level API
           that automatically discovers and tracks MPRIS players, handles proxy setup,
           and provides playback control, metadata, and capability accessors.
           For lower-level access, use `imports.misc.interfaces.getDBusProxyWithOwner()`.
