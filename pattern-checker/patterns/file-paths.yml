@@ -1,0 +1,70 @@
+patterns:
+    # -- Home Directory / Path Construction --
+
+    - name: tilde_in_string
+      regex: "['\"]~/"
+      message: |
+          Avoid using `~/` to represent the home directory in strings.
+          Use `GLib.get_home_dir()` and `GLib.build_filenamev()` to construct paths instead.
+          For standard user directories (Pictures, Documents, etc.), use
+          `GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_PICTURES)` — these
+          directories can have different names in other languages.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: hardcoded_xdg_user_dir
+      regex: "get_home_dir\\(\\)\\s*[,+]\\s*['\"]\\s*/?(Desktop|Documents|Downloads|Music|Pictures|Videos|Templates|Public)"
+      message: |
+          Do not construct paths to standard user directories using `get_home_dir()` with
+          a hardcoded folder name — these directories can have different names depending on
+          the user's language. Use `GLib.get_user_special_dir()` instead:
+          - `GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_DESKTOP)`
+          - `GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_DOCUMENTS)`
+          - `GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_DOWNLOAD)`
+          - `GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_MUSIC)`
+          - `GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_PICTURES)`
+          - `GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_VIDEOS)`
+          - `GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_TEMPLATES)`
+          - `GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_PUBLIC_SHARE)`
+      severity: warning
+      extensions:
+          - .js
+
+    # -- Hardcoded XDG Base Directories --
+
+    - name: hardcoded_data_dir
+      regex: "['\"]/?\\.(local/share|local['\"/]+share)"
+      message: |
+          Avoid hardcoding `.local/share` in paths. Use `GLib.get_user_data_dir()` instead,
+          which respects the `XDG_DATA_HOME` environment variable.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: hardcoded_config_dir
+      regex: "['\"]/?\\.(config)"
+      message: |
+          Avoid hardcoding `.config` in paths. Use `GLib.get_user_config_dir()` instead,
+          which respects the `XDG_CONFIG_HOME` environment variable.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: hardcoded_cache_dir
+      regex: "['\"]/?\\.(cache)"
+      message: |
+          Avoid hardcoding `.cache` in paths. Use `GLib.get_user_cache_dir()` instead,
+          which respects the `XDG_CACHE_HOME` environment variable.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: hardcoded_state_dir
+      regex: "['\"]/?\\.(local/state|local['\"/]+state)"
+      message: |
+          Avoid hardcoding `.local/state` in paths. Use `GLib.get_user_state_dir()` instead,
+          which respects the `XDG_STATE_HOME` environment variable.
+      severity: warning
+      extensions:
+          - .js
