@@ -96,7 +96,9 @@ patterns:
       message: |
           `Meta.keybindings_set_custom_handler()` overrides built-in keybinding handlers.
           This can hijack window switching, workspace navigation, etc.
-          This should never be used in third-party code.
+
+          (Cinnamon 6.8) Internal code should use `Main.keybindingManager.setBuiltinHandler(name, actionId, callback, allowedModes)`
+          instead, which integrates with `ActionMode` filtering.
       severity: warning
       extensions:
           - .js
