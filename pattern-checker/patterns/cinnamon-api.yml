@@ -97,6 +97,7 @@ patterns:
 
     - name: raw_upower
       regex: 'imports\.gi\.UPowerGlib'
+      cinnamon_version: "6.8"
       message: |
           (Cinnamon 6.8) Use `imports.misc.powerUtils` instead of `UPowerGlib` directly.
           `powerUtils` provides shared helpers for battery icon names, device kind

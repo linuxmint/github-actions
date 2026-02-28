@@ -93,6 +93,7 @@ patterns:
 
     - name: meta_keybindings_set_custom_handler
       regex: 'Meta\.keybindings_set_custom_handler\s*\('
+      cinnamon_version: "6.8"
       message: |
           `Meta.keybindings_set_custom_handler()` overrides built-in keybinding handlers.
           This can hijack window switching, workspace navigation, etc.

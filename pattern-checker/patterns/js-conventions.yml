@@ -46,6 +46,7 @@ patterns:
 
     - name: require_usage
       regex: '\brequire\s*\('
+      cinnamon_version: "6.8"
       message: |
           (Cinnamon 6.8) `require()` is deprecated. Use the native CJS importer instead:
           - For local xlet modules: `const Extension = imports.ui.extension;`
@@ -58,6 +59,7 @@ patterns:
 
     - name: module_exports
       regex: '\bmodule\.exports\b'
+      cinnamon_version: "6.8"
       message: |
           (Cinnamon 6.8) `module.exports` is deprecated. Use `var` to declare symbols you want
           to export — the native CJS importer automatically exports top-level
@@ -69,6 +71,7 @@ patterns:
 
     - name: file_utils_old_api
       regex: '\b(requireModule|getModuleByIndex|unloadModule)\s*\('
+      cinnamon_version: "6.8"
       message: |
           (Cinnamon 6.8) `requireModule()`, `getModuleByIndex()`, and `unloadModule()` have been
           removed from `fileUtils`. Use the native CJS importer instead:
@@ -79,10 +82,24 @@ patterns:
       extensions:
           - .js
 
+    - name: generic_container
+      regex: 'Cinnamon\.GenericContainer'
+      cinnamon_version: "6.6"
+      message: |
+          (Cinnamon 6.6) `Cinnamon.GenericContainer` is deprecated. It was a workaround for when
+          JavaScript classes could not override ClutterActor virtual functions.
+          Create a GObject subclass of `St.Widget` (or another container) and override
+          the `vfunc_get_preferred_width`, `vfunc_get_preferred_height`, and
+          `vfunc_allocate` methods directly instead.
+      severity: warning
+      extensions:
+          - .js
+
     - name: tweener_usage
       regex: '\b(Tweener\.addTween|Tweener\.removeTweens|Tweener\.pauseTweens|Tweener\.resumeTweens|imports\.ui\.tweener)\b'
+      cinnamon_version: "5.4"
       message: |
-          The Tweener module is deprecated. Use Clutter actor easing instead.
+          (Cinnamon 5.4) The Tweener module is deprecated. Use Clutter actor easing instead.
           Actors have `ease()` and `ease_property()` methods (patched in `environment.js`).
           Example: `actor.ease({ opacity: 255, duration: 200, mode: Clutter.AnimationMode.EASE_OUT_QUAD });`
       severity: warning

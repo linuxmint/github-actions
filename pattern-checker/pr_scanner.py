@@ -27,10 +27,50 @@ COLOR_BOLD = "\033[1m"
 COLOR_DIM = "\033[2m"
 
 
+def parse_version(version_str):
+    try:
+        parts = version_str.strip().split(".")
+        return tuple(int(p) for p in parts[:2])
+    except (ValueError, IndexError):
+        return None
+
+
+def fetch_cinnamon_version(github_token):
+    try:
+        import requests
+    except ImportError:
+        return None
+
+    headers = {
+        "Authorization": f"token {github_token}",
+        "Accept": "application/vnd.github.v3+json",
+    }
+
+    url = "https://api.github.com/repos/linuxmint/cinnamon/tags"
+    response = requests.get(url, headers=headers, params={"per_page": 100})
+    if response.status_code != 200:
+        return None
+
+    version_re = re.compile(r"^\d+\.\d+\.\d+$")
+    versions = []
+    for tag in response.json():
+        name = tag["name"]
+        if version_re.match(name):
+            parsed = parse_version(name)
+            if parsed:
+                versions.append(parsed)
+
+    if not versions:
+        return None
+
+    return max(versions)
+
+
 class PatternChecker:
-    def __init__(self, config_file=None, file_extensions=None):
+    def __init__(self, config_file=None, file_extensions=None, cinnamon_version=None):
         self.config_file = config_file
         self.file_extensions = file_extensions
+        self.cinnamon_version = cinnamon_version
         self.findings = []
         self.config = None
 
@@ -124,9 +164,27 @@ class PatternChecker:
 
         return findings
 
+    def should_check_version(self, pattern):
+        required = pattern.get("cinnamon_version")
+        if not required or not self.cinnamon_version:
+            return True
+
+        # Always quote cinnamon_version in YAML to avoid float truncation (e.g. 5.10 -> 5.1)
+        if isinstance(required, float):
+            print(f"Warning: cinnamon_version for '{pattern.get('name')}' was parsed as float. "
+                  f"Quote it in the YAML file.", file=sys.stderr)
+
+        required_ver = parse_version(str(required))
+        if not required_ver:
+            return True
+
+        return self.cinnamon_version >= required_ver
+
     def check_files(self, file_patches):
         for filename, patch in file_patches.items():
             for pattern in self.config["patterns"]:
+                if not self.should_check_version(pattern):
+                    continue
                 if not self.should_check_file(filename, pattern):
                     continue
 
@@ -305,7 +363,13 @@ def run_github_action():
     file_extensions = os.environ.get("PATTERN_CHECK_EXTENSIONS", "")
     only_warn = os.environ.get("PATTERN_CHECK_ONLY_WARN", "true").lower() == "true"
 
-    checker = PatternChecker(config_file=config_file, file_extensions=file_extensions)
+    cinnamon_version = fetch_cinnamon_version(github_token)
+    if cinnamon_version:
+        print(f"Cinnamon version: {cinnamon_version[0]}.{cinnamon_version[1]}")
+    else:
+        print("Could not determine Cinnamon version, all patterns will be checked")
+
+    checker = PatternChecker(config_file=config_file, file_extensions=file_extensions, cinnamon_version=cinnamon_version)
     print("Loading patterns...")
     checker.load_config()
 
@@ -382,9 +446,14 @@ def main():
     parser.add_argument("ref", help="Commit SHA, range (base..head), or branch name")
     parser.add_argument("-c", "--config", help="Path to custom pattern config file", default="")
     parser.add_argument("-e", "--extensions", help="Comma-separated file extensions to check", default="")
+    parser.add_argument("--cinnamon-version", help="Cinnamon version for filtering patterns (e.g., 6.6)", default="")
     args = parser.parse_args()
 
-    checker = PatternChecker(config_file=args.config, file_extensions=args.extensions)
+    cinnamon_version = parse_version(args.cinnamon_version) if args.cinnamon_version else None
+    if cinnamon_version:
+        print(f"Cinnamon version: {cinnamon_version[0]}.{cinnamon_version[1]}")
+
+    checker = PatternChecker(config_file=args.config, file_extensions=args.extensions, cinnamon_version=cinnamon_version)
     print("Loading patterns...")
     checker.load_config()
 
