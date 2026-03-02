@@ -95,6 +95,43 @@ patterns:
       extensions:
           - .js
 
+    # -- Deprecated Background APIs (6.8) --
+
+    - name: global_background_actor
+      regex: '\bglobal\.background_actor\b'
+      cinnamon_version: "6.8"
+      message: |
+          (Cinnamon 6.8) `global.background_actor` is deprecated and returns NULL.
+          Use `global.get_background_actors()` to get the list of per-monitor background
+          actors, or `Main.createFullScreenBackground()` to create a container with one
+          background per monitor.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: meta_background_actor
+      regex: '\bMeta\.BackgroundActor\b'
+      cinnamon_version: "6.8"
+      message: |
+          (Cinnamon 6.8) `Meta.BackgroundActor` has been removed. Use
+          `Meta.create_background_for_monitor(global.display, monitorIndex)` to create a
+          background actor for a specific monitor, or `Main.createFullScreenBackground()`
+          to create a container with backgrounds for all monitors.
+      severity: warning
+      extensions:
+          - .js
+
+    - name: meta_x11_background_actor
+      regex: '\bMeta\.X11BackgroundActor\b'
+      cinnamon_version: "6.8"
+      message: |
+          (Cinnamon 6.8) `Meta.X11BackgroundActor` is X11-only and will not work on
+          Wayland. Use `Meta.create_background_for_monitor(global.display, monitorIndex)`
+          instead, which works on both X11 and Wayland.
+      severity: warning
+      extensions:
+          - .js
+
     - name: tweener_usage
       regex: '\b(Tweener\.addTween|Tweener\.removeTweens|Tweener\.pauseTweens|Tweener\.resumeTweens|imports\.ui\.tweener)\b'
       cinnamon_version: "5.4"
