@@ -69,6 +69,16 @@ patterns:
       extensions:
           - .js
 
+    - name: file_utils_desktop_dir
+      regex: '\bgetUserDesktopDir\s*\('
+      cinnamon_version: "5.4"
+      message: |
+          (Cinnamon 5.4) `getUserDesktopDir()` is deprecated. Use
+          `GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_DESKTOP)` instead.
+      severity: warning
+      extensions:
+          - .js
+
     - name: file_utils_old_api
       regex: '\b(requireModule|getModuleByIndex|unloadModule)\s*\('
       cinnamon_version: "6.8"
