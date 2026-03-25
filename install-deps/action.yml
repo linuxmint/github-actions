@@ -3,9 +3,9 @@ description: 'Install dependencies from other repos'
 
 inputs:
   mint_version:
-    description: 'The Mint version pull from (mint21, lmde5)'
+    description: 'The Mint version to pull from'
     required: true
-    default: mint21
+    default: mint22
   dependencies:
     description: 'A comma separated list of owner/repo dependencies to pull the latest build for (such as "linuxmint/xapp, linuxmint/cinnamon-desktop, linuxmint/cinnamon-menus")'
     required: false
