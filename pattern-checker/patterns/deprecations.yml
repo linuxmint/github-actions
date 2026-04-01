@@ -63,6 +63,19 @@ patterns:
       extensions:
           - .js
 
+    # -- panel.height (4.0) --
+
+    - name: panel_height_property
+      regex: '\.panel\.height\b'
+      cinnamon_version: "4.0"
+      message: |
+          (Cinnamon 4.0) Accessing `panel.height` is deprecated. Use `applet._panelHeight`
+          (or `this._panelHeight` from within an applet) to get the panel size for zone/icon
+          calculations. Use `panel.get_height()` if you need the actual actor pixel height.
+      severity: warning
+      extensions:
+          - .js
+
     # -- CJS module system (6.8) --
 
     - name: require_usage
