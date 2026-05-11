@@ -13,11 +13,6 @@ on:
                 required: false
                 type: string
                 default: ''
-            only_warn:
-                description: 'Only warn, do not fail the workflow.'
-                required: false
-                type: boolean
-                default: true
 
 jobs:
     pattern-check:
@@ -38,4 +33,3 @@ jobs:
                   github_token: ${{ github.token }}
                   config_file: ${{ inputs.config_file }}
                   file_extensions: ${{ inputs.file_extensions }}
-                  only_warn: ${{ inputs.only_warn }}

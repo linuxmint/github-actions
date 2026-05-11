@@ -19,9 +19,21 @@ except ImportError:
 SCRIPT_DIR = Path(os.path.dirname(os.path.realpath(__file__)))
 
 SEVERITY_COLORS = {
+    "block": "\033[31m",    # red
     "warning": "\033[33m",  # yellow
     "info": "\033[36m",     # cyan
 }
+SEVERITY_LABELS = {
+    "block": "BLOCK",
+    "warning": "WARNING",
+    "info": "INFO",
+}
+SEVERITY_EMOJI = {
+    "block": ":no_entry:",
+    "warning": ":warning:",
+    "info": ":information_source:",
+}
+SEVERITY_ORDER = ("block", "warning", "info")
 COLOR_RESET = "\033[0m"
 COLOR_BOLD = "\033[1m"
 COLOR_DIM = "\033[2m"
@@ -203,19 +215,19 @@ class PatternChecker:
         if not self.findings:
             return None
 
-        by_severity = {"warning": [], "info": []}
+        by_severity = {sev: [] for sev in SEVERITY_ORDER}
         for finding in self.findings:
-            severity = finding["severity"]
-            by_severity.setdefault(severity, []).append(finding)
+            by_severity.setdefault(finding["severity"], []).append(finding)
 
         lines = []
 
-        for severity in ("warning", "info"):
+        for severity in SEVERITY_ORDER:
             severity_findings = by_severity.get(severity, [])
             if not severity_findings:
                 continue
 
             color = SEVERITY_COLORS.get(severity, "")
+            label = SEVERITY_LABELS.get(severity, severity.upper())
 
             by_pattern = {}
             for finding in severity_findings:
@@ -223,7 +235,6 @@ class PatternChecker:
                 by_pattern.setdefault(name, []).append(finding)
 
             for pattern_name, pattern_findings in by_pattern.items():
-                label = "WARNING" if severity == "warning" else "INFO"
                 lines.append(f"{color}{COLOR_BOLD}[{label}] {pattern_name}{COLOR_RESET}")
 
                 message = pattern_findings[0]["message"].strip()
@@ -251,31 +262,44 @@ class PatternChecker:
         if not self.findings:
             return None
 
+        has_block = any(f["severity"] == "block" for f in self.findings)
+
         comment = "## Best-practices scanner\n\n"
-        comment += "This is a regex-based check for API usage that can pose security, performance or\n";
-        comment += "maintainability issues, or that may already be provided by Cinnamon. Having code flagged\n";
-        comment += "by it doesn't automatically disqualify a pull request.\n\n";
-        comment += "### This check is not perfect will not replace a normal review.\n";
+        if has_block:
+            comment += ":no_entry: **This pull request contains changes flagged as blocking.** "
+            comment += "Findings under the BLOCK section must be addressed before this PR can be merged.\n\n"
+        comment += "This is a regex-based check for API usage that can pose security, performance or\n"
+        comment += "maintainability issues, or that may already be provided by Cinnamon. Most findings\n"
+        comment += "are advisory and do not automatically disqualify a pull request.\n\n"
+        comment += "### This check is not perfect and will not replace a normal review.\n"
         comment += "---\n"
         comment += f"Found {len(self.findings)} potential issue(s):\n\n"
 
-        by_pattern = {}
+        by_severity_pattern = {sev: {} for sev in SEVERITY_ORDER}
         for finding in self.findings:
-            pattern_name = finding["pattern_name"]
-            by_pattern.setdefault(pattern_name, []).append(finding)
+            severity = finding["severity"]
+            by_severity_pattern.setdefault(severity, {}).setdefault(finding["pattern_name"], []).append(finding)
 
-        for pattern_name, pattern_findings in by_pattern.items():
-            severity_emoji = ":warning:" if pattern_findings[0]["severity"] == "warning" else ":information_source:"
-            comment += f"### {severity_emoji} {pattern_name}\n\n"
+        for severity in SEVERITY_ORDER:
+            by_pattern = by_severity_pattern.get(severity, {})
+            if not by_pattern:
+                continue
 
-            for finding in pattern_findings:
-                if repository and event_type and ref:
-                    link = self._make_diff_link(finding['filename'], finding['line_num'], repository, event_type, ref)
-                    comment += f"**[{finding['filename']}:{finding['line_num']}]({link})**\n"
-                else:
-                    comment += f"**{finding['filename']}:{finding['line_num']}**\n"
-                comment += f"```\n{finding['line_content'].strip()}\n```\n"
-                comment += f"{finding['message']}\n\n"
+            emoji = SEVERITY_EMOJI.get(severity, ":grey_question:")
+            label = SEVERITY_LABELS.get(severity, severity.upper())
+            comment += f"## {emoji} {label}\n\n"
+
+            for pattern_name, pattern_findings in by_pattern.items():
+                comment += f"### {emoji} {pattern_name}\n\n"
+
+                for finding in pattern_findings:
+                    if repository and event_type and ref:
+                        link = self._make_diff_link(finding['filename'], finding['line_num'], repository, event_type, ref)
+                        comment += f"**[{finding['filename']}:{finding['line_num']}]({link})**\n"
+                    else:
+                        comment += f"**{finding['filename']}:{finding['line_num']}**\n"
+                    comment += f"```\n{finding['line_content'].strip()}\n```\n"
+                    comment += f"{finding['message']}\n\n"
 
         comment += "---\n"
         comment += "*Automated pattern check.*\n"
@@ -361,7 +385,6 @@ def run_github_action():
     github_token = os.environ.get("PATTERN_CHECK_TOKEN")
     config_file = os.environ.get("PATTERN_CHECK_CONFIG", "")
     file_extensions = os.environ.get("PATTERN_CHECK_EXTENSIONS", "")
-    only_warn = os.environ.get("PATTERN_CHECK_ONLY_WARN", "true").lower() == "true"
 
     cinnamon_version = fetch_cinnamon_version(github_token)
     if cinnamon_version:
@@ -376,7 +399,7 @@ def run_github_action():
     event_path = os.environ.get("GITHUB_EVENT_PATH")
     if not event_path or not os.path.exists(event_path):
         print("::error::GITHUB_EVENT_PATH not found", file=sys.stderr)
-        sys.exit(0 if only_warn else 1)
+        sys.exit(1)
 
     with open(event_path, "r") as f:
         event = json.load(f)
@@ -402,14 +425,19 @@ def run_github_action():
     checker.check_files(file_patches)
 
     if checker.findings:
-        print(f"::warning::Found {len(checker.findings)} pattern matches")
+        block_count = sum(1 for f in checker.findings if f["severity"] == "block")
+        if block_count:
+            print(f"::error::Found {block_count} blocking pattern match(es) (of {len(checker.findings)} total)")
+        else:
+            print(f"::warning::Found {len(checker.findings)} pattern matches")
+
         comment = checker.format_github_comment(repository, event_type, ref)
         if comment:
             try:
                 import requests
             except ImportError:
                 print(comment)
-                sys.exit(0 if only_warn else 1)
+                sys.exit(1 if block_count else 0)
 
             headers = {
                 "Authorization": f"token {github_token}",
@@ -427,7 +455,7 @@ def run_github_action():
             else:
                 print(f"::error::Failed to post comment: {response.status_code}")
 
-        if not only_warn:
+        if block_count:
             sys.exit(1)
     else:
         print("::notice::No pattern matches found")

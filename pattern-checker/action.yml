@@ -13,10 +13,6 @@ inputs:
         description: 'Comma-separated list of file extensions to check (e.g., .py,.c,.h)'
         required: false
         default: ''
-    only_warn:
-        description: 'Only warn, do not fail the workflow'
-        required: false
-        default: 'true'
 
 runs:
     using: 'composite'
@@ -29,5 +25,4 @@ runs:
             PATTERN_CHECK_TOKEN: ${{ inputs.github_token }}
             PATTERN_CHECK_CONFIG: ${{ inputs.config_file }}
             PATTERN_CHECK_EXTENSIONS: ${{ inputs.file_extensions }}
-            PATTERN_CHECK_ONLY_WARN: ${{ inputs.only_warn }}
           shell: bash
