@@ -48,7 +48,7 @@ patterns:
       message: |
           Do not use `Gdk.Screen` in the Cinnamon runtime.
           Use `Meta.Display` (via `global.display`/ `Main.layoutManager` for monitor information instead.
-      severity: warning
+      severity: block
       extensions:
           - .js
 
