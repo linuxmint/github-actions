@@ -19,10 +19,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout calling repo
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
 
             - name: Checkout github-actions repo
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
               with:
                   repository: linuxmint/github-actions
                   path: _github-actions
