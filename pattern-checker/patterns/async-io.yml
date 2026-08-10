@@ -125,6 +125,18 @@ patterns:
           - .js
           - .vala
 
+    - name: sync_find_program_in_path
+      regex: 'GLib\.find_program_in_path\s*\('
+      cinnamon_version: "6.8"
+      message: |
+          (Cinnamon 6.8) `GLib.find_program_in_path()` is a synchronous stat-walk of
+          `PATH` that can block on slow/network filesystems.
+          Use `Cinnamon.find_program_in_path(program, callback)` instead - the callback
+          receives the full path, or `null` if the program wasn't found.
+      severity: warning
+      extensions:
+          - .js
+
     - name: sync_soup_send_message
       regex: '(soup_session_send_message|\.send_message)\s*\('
       message: |
