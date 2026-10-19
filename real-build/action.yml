@@ -7,6 +7,11 @@ inputs:
     required: false
     default: ''
 
+  install_packages:
+    description: 'Install the built packages (in addition to building them)'
+    required: false
+    default: 'true'
+
 runs:
   using: 'composite'
   steps:
@@ -20,7 +25,12 @@ runs:
           install -m 0440 /dev/stdin /etc/sudoers.d/mint-build-profiles <<<'Defaults env_keep += "DEB_BUILD_PROFILES"'
           trap 'rm -f /etc/sudoers.d/mint-build-profiles' EXIT
         fi
-        mint-build -i
+        if [[ "$INSTALL_PACKAGES" = true ]]; then
+          mint-build -i
+        else
+          mint-build
+        fi
       shell: bash
       env:
         MINT_VERSION: ${{ inputs.mint_version }}
+        INSTALL_PACKAGES: ${{ inputs.install_packages }}

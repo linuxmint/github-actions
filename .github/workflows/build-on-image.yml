@@ -25,6 +25,11 @@ on:
         description: 'A comma separated list of owner/repo dependencies to pull the latest build for (such as "linuxmint/xapp, linuxmint/cinnamon-desktop, linuxmint/cinnamon-menus")'
         type: string
         required: false
+      install_packages:
+        description: 'Install the built packages (in addition to building them)'
+        type: boolean
+        required: false
+        default: true
       codespell:
         description: "Whether to run codespell during the job"
         type: boolean
@@ -102,6 +107,7 @@ jobs:
         uses: linuxmint/github-actions/real-build@master
         with:
           mint_version: ${{ inputs.mint_version }}
+          install_packages: ${{ inputs.install_packages }}
 
       - name: Setup SSH upon failure
         if: ${{ failure() && inputs.debug_enabled}}

@@ -10,7 +10,11 @@
   dependency resolution and to `dpkg-buildpackage`. Distributions without
   a profile file keep their default build. Direct callers of `real-build`
   should pass its optional `mint_version` input to select a profile file.
-
+- `mint22_install_packages: false` makes the Mint 22 job build packages
+  without installing the resulting binaries. Dependency resolution and the
+  complete package build still run. LMDE 7 and Mint 27 continue installing
+  their packages. Direct callers of `build-on-image.yml` or `real-build`
+  can use `install_packages: false`. The default is `true`.
 
 ### Status for Linux Mint:
 

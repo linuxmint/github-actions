@@ -13,6 +13,11 @@ on:
         description: 'A comma separated list of owner/repo dependencies to pull the latest build for (such as "linuxmint/xapp, linuxmint/cinnamon-desktop, linuxmint/cinnamon-menus")'
         required: false
         type: string
+      mint22_install_packages:
+        description: 'Install the built packages on Mint 22 (in addition to building them)'
+        type: boolean
+        required: false
+        default: true
       codespell_ignore_files_list:
         description: 'A comma separated list of files to skip with codespell.'
         required: false
@@ -60,6 +65,7 @@ jobs:
       display_name: ${{ matrix.display_name }}
       mint_version: ${{ matrix.mint_version }}
       image: ${{ matrix.image }}
+      install_packages: ${{ matrix.mint_version != 'mint22' || inputs.mint22_install_packages }}
 
       commit_id: ${{ github.event.repository.name == 'cjs' && (matrix.mint_version == 'mint22' && '115-maintenance' || matrix.mint_version == 'lmde7' && '128-maintenance') || inputs.commit_id }}
       dependencies: ${{ inputs.dependencies }}
