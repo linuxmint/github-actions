@@ -1,10 +1,24 @@
 name: 'Build'
 description: 'Build package'
 
+inputs:
+  build_profiles:
+    description: 'Space separated Debian build profiles to enable'
+    required: false
+    default: ''
+
 runs:
   using: 'composite'
   steps:
     - run: |
         chown root:root .
+        if [[ -n "$BUILD_PROFILES" ]]; then
+          export DEB_BUILD_PROFILES="$BUILD_PROFILES"
+          # mint-build invokes mk-build-deps via sudo, which resets the environment.
+          install -m 0440 /dev/stdin /etc/sudoers.d/mint-build-profiles <<<'Defaults env_keep += "DEB_BUILD_PROFILES"'
+          trap 'rm -f /etc/sudoers.d/mint-build-profiles' EXIT
+        fi
         mint-build -i
       shell: bash
+      env:
+        BUILD_PROFILES: ${{ inputs.build_profiles }}
