@@ -18,7 +18,8 @@ runs:
     - run: |
         chown root:root .
         if [[ -n "$MINT_VERSION" && -f "debian/build-profiles.$MINT_VERSION" ]]; then
-          export DEB_BUILD_PROFILES="$(cat "debian/build-profiles.$MINT_VERSION")"
+          DEB_BUILD_PROFILES="$(cat "debian/build-profiles.$MINT_VERSION")"
+          export DEB_BUILD_PROFILES
         fi
         if [[ -n "${DEB_BUILD_PROFILES:-}" ]]; then
           # mint-build invokes mk-build-deps via sudo, which resets the environment.
