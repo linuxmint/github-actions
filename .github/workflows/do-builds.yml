@@ -13,11 +13,6 @@ on:
         description: 'A comma separated list of owner/repo dependencies to pull the latest build for (such as "linuxmint/xapp, linuxmint/cinnamon-desktop, linuxmint/cinnamon-menus")'
         required: false
         type: string
-      mint22_build_profiles:
-        description: 'Space separated Debian build profiles to enable on Mint 22'
-        required: false
-        type: string
-        default: ''
       codespell_ignore_files_list:
         description: 'A comma separated list of files to skip with codespell.'
         required: false
@@ -68,7 +63,6 @@ jobs:
 
       commit_id: ${{ github.event.repository.name == 'cjs' && (matrix.mint_version == 'mint22' && '115-maintenance' || matrix.mint_version == 'lmde7' && '128-maintenance') || inputs.commit_id }}
       dependencies: ${{ inputs.dependencies }}
-      build_profiles: ${{ matrix.mint_version == 'mint22' && inputs.mint22_build_profiles || '' }}
 
       codespell: ${{ !inputs.skip_codespell && matrix.codespell }}
       codespell_ignore_files_list: ChangeLog,*.desktop,*.po,*.svg,LINGUAS,NEWS,${{ inputs.codespell_ignore_files_list }}

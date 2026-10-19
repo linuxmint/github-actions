@@ -2,8 +2,8 @@ name: 'Build'
 description: 'Build package'
 
 inputs:
-  build_profiles:
-    description: 'Space separated Debian build profiles to enable'
+  mint_version:
+    description: 'The Mint version to select Debian build profiles for'
     required: false
     default: ''
 
@@ -12,8 +12,10 @@ runs:
   steps:
     - run: |
         chown root:root .
-        if [[ -n "$BUILD_PROFILES" ]]; then
-          export DEB_BUILD_PROFILES="$BUILD_PROFILES"
+        if [[ -n "$MINT_VERSION" && -f "debian/build-profiles.$MINT_VERSION" ]]; then
+          export DEB_BUILD_PROFILES="$(cat "debian/build-profiles.$MINT_VERSION")"
+        fi
+        if [[ -n "${DEB_BUILD_PROFILES:-}" ]]; then
           # mint-build invokes mk-build-deps via sudo, which resets the environment.
           install -m 0440 /dev/stdin /etc/sudoers.d/mint-build-profiles <<<'Defaults env_keep += "DEB_BUILD_PROFILES"'
           trap 'rm -f /etc/sudoers.d/mint-build-profiles' EXIT
@@ -21,4 +23,4 @@ runs:
         mint-build -i
       shell: bash
       env:
-        BUILD_PROFILES: ${{ inputs.build_profiles }}
+        MINT_VERSION: ${{ inputs.mint_version }}

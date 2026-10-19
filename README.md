@@ -3,12 +3,14 @@
 
 - Place 'build.yml' in the repo under .github/workflows.
 - Add dependencies if needed.
-- To enable Debian build profiles only for Mint 22, pass a space separated
-  `mint22_build_profiles` input to `do-builds.yml`, for example
-  `mint22_build_profiles: pkg.cinnamon.nowayland`. LMDE 7 and Mint 27 keep
-  their default profiles. Direct callers of `build-on-image.yml` or the
-  `real-build` action can pass `build_profiles` instead. The profile is
-  applied both to dependency resolution and to `dpkg-buildpackage`.
+- To enable Debian build profiles for a specific distribution, add a
+  `debian/build-profiles.<mint_version>` file to the project, for example
+  `debian/build-profiles.mint22` containing `pkg.cinnamon.nowayland`.
+  Its contents are a space separated list of profiles, applied both to
+  dependency resolution and to `dpkg-buildpackage`. Distributions without
+  a profile file keep their default build. Direct callers of `real-build`
+  should pass its optional `mint_version` input to select a profile file.
+
 
 ### Status for Linux Mint:
 
